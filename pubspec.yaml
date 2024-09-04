@@ -55,7 +55,7 @@ dependencies:
   video_player: ^2.8.2
   url_launcher: any
   camera_camera: ^3.0.0
-  camera: any
+  camera: ^0.10.5+9
   audio_waveforms: ^1.0.4
   path_provider: any
   file_picker: any
@@ -82,6 +82,9 @@ dependencies:
   cached_network_image: ^3.3.1
   curl_logger_dio_interceptor: ^1.0.0
   sign_button: ^2.0.6
+  device_info_plus: ^9.1.2
+  firebase_auth: ^4.20.0
+  country_picker: ^2.0.26
 dev_dependencies:
   flutter_test:
     sdk: flutter

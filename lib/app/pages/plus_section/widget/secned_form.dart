@@ -9,7 +9,6 @@ import 'package:mediaverse/app/pages/plus_section/logic.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../common/app_color.dart';
-import '../../signup/widgets/custom_text_field_form_register_widget.dart';
 import 'custom_plan_text_filed.dart';
 
 class SecendForm extends StatefulWidget {

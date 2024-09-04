@@ -43,7 +43,7 @@ class WrapperController extends GetxController {
   }
 
   void parseAndNavigate(Uri uri) {
-    if (uri.host == 'media.verse') {
+    if (uri.host == 'mediaverse.app') {
       if (uri.toString().contains('page')) {
         String? page = uri.queryParameters['page'];
         if (page == 'profile') {
@@ -60,7 +60,7 @@ class WrapperController extends GetxController {
           navigatePages(3);
 
         } else if (page == 'single') {
-          String? type = uri.queryParameters['type'].toString();
+          String? type = uri.queryParameters['media_type'].toString();
           String? id = uri.queryParameters['id'].toString();
           String route = PageRoutes.DETAILVIDEO;
 

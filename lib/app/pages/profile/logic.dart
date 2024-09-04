@@ -37,7 +37,8 @@ class ProfileControllers extends GetxController implements RequestInterface {
   late FromJsonGetImages fromJsonGetImages;
   ProfileModel model = ProfileModel();
   late ApiRequster apiRequster;
-
+  Map<String, dynamic> countreisModel ={};
+  List<String> countreisString =[];
   List<dynamic> ownerImages = [];
   List<dynamic> ownerVideos = [];
   List<dynamic> ownerAudios = [];
@@ -54,7 +55,8 @@ class ProfileControllers extends GetxController implements RequestInterface {
   bool emptySubAudios = false;
   bool emptySubText = false;
 
-  var isStripeConnected = true;
+  var isBillingStripeConnected = true;
+  var isIncomeStripeConnected = true;
 
 
   FromJsonGetAllAsstes myAssets = FromJsonGetAllAsstes();
@@ -75,6 +77,9 @@ class ProfileControllers extends GetxController implements RequestInterface {
   var isloadingWallet = false.obs;
   var isloadingEdit = false.obs;
 
+
+  TextEditingController languageController = TextEditingController();
+
   @override
   void onReady() {
     // TODO: implement onReady
@@ -82,20 +87,65 @@ class ProfileControllers extends GetxController implements RequestInterface {
     apiRequster = ApiRequster(this, develperModel: false);
 
     onGetProfileMethod();
-    getWalletBalance();
+    //getWalletBalance();
     getStripe();
+    getPayout();
+    getAllCountries();
   }
 
   onGetProfileMethod() {
     isloading(true);
     apiRequster.request("profile", ApiRequster.MHETOD_GET, 1, useToken: true);
   }
+  Future<void> getAllCountries() async {
+
+    var dio = Dio();
+
+
+    //  debugger();
+    dio.interceptors.add(MediaVerseConvertInterceptor());
+
+    print('PlusSectionLogic.getAllCountries = ${Constant.HTTP_HOST}languages');
+    try {
+
+      print('PlusSectionLogic.getAllCountries 1');
+
+      var response = await dio.get(
+        '${Constant.HTTP_HOST}languages',
+        options: Options(
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'X-App': '_Android',
+          },
+        ),
+
+      );
+      print('PlusSectionLogic.getAllCountries 1 = ${response.statusCode}');
+
+      //   debugger();
+      if (response.statusCode! >= 200||response.statusCode! < 300) {
+        print('PlusSectionLogic.getAllCountries 2');
+
+
+        countreisModel = response.data;
+
+        (countreisModel.values).forEach((element) {
+          countreisString.add(element);
+        });
+        print('PlusSectionLogic.getAllCountries = ${countreisModel.length}');
+      } else {
+        print('Failed to upload file: ${response.statusMessage}');
+      }
+    } on DioError catch (e) {
+      print('DioError: ${e.message}');
+    }
+  }
 
   @override
   void onError(String content, int reqCode, bodyError) {
     // TODO: implement onError
     if(reqCode==15){
-      isStripeConnected = false;
+      isBillingStripeConnected = false;
       update();
       //getStripeConnect();
     }else{
@@ -178,13 +228,28 @@ class ProfileControllers extends GetxController implements RequestInterface {
         case 17:
         parseJsonFromGateWay(source);
         break;
+        case 18:
+        pareJsonFromPayout(source);
+        break;
+        case 19:
+        pareJsonFromPayoutConnect(source);
+        break;
+        case 20:
+        pareJsonFromBills(source);
+        break;
+        case 21:
+        pareJsonFromInoice(source);
+        break;
+        case 22:
+        pareJsonFromInoiceByLink(source);
+        break;
     }
   }
 
   void praseJsonFromGetProfile(source) {
-   // print('ProfileControllers.praseJsonFromGetProfile  1 ${source}');
+    print('ProfileControllers.praseJsonFromGetProfile  1 ${source}');
     model = ProfileModel.fromJson(jsonDecode(source));
-  //  print('ProfileControllers.praseJsonFromGetProfile  2 ');
+    print('ProfileControllers.praseJsonFromGetProfile  2 ');
     onGetProfileAssets();
 
     onGetAssetsAll();
@@ -342,8 +407,10 @@ class ProfileControllers extends GetxController implements RequestInterface {
       "first_name": text,
       "last_name": text2,
       "email": text3,
+      "country_iso":(Constant.reverseMap(countreisModel)[languageController.text]).toString().toUpperCase()
 
     };
+    print('ProfileControllers.sendEditRequest = ${body}');
     apiRequster.request("profile", ApiRequster.MHETOD_PUT, 13,body: body);
   }
 
@@ -362,16 +429,39 @@ class ProfileControllers extends GetxController implements RequestInterface {
 
   getStripe(){
     // isloading(true);
-    apiRequster.request("stripe/account", ApiRequster.MHETOD_GET, 15,useToken: true);
+    apiRequster.request("stripe/subscription", ApiRequster.MHETOD_GET, 15,useToken: true);
   }
   getStripeConnect(){
     // isloading(true);
-    apiRequster.request("stripe/connect", ApiRequster.MHETOD_POST, 16,useToken: true);
+    apiRequster.request("stripe/subscription/link", ApiRequster.MHETOD_GET, 16,useToken: true);
   }
-  getStripeGateWay(){
-    isloadingWallet(true);
-    apiRequster.request("stripe/gateway", ApiRequster.MHETOD_GET, 17,useToken: true);
+  getsubscriptionSetting(){
+  //  isloadingWallet(true);
+    apiRequster.request("stripe/subscription/link", ApiRequster.MHETOD_GET, 16,useToken: true);
   }
+
+  getPayout(){
+    // isloading(true);
+    apiRequster.request("stripe/payout", ApiRequster.MHETOD_GET, 18,useToken: true);
+  }
+  getPayoutConnect(){
+    // isloading(true);
+    apiRequster.request("stripe/payout/link", ApiRequster.MHETOD_GET, 19,useToken: true);
+  }
+  getBiilss(){
+    // isloading(true);
+    apiRequster.request("bills", ApiRequster.MHETOD_GET, 20,useToken: true);
+  }
+  getInvoice(){
+    // isloading(true);
+    apiRequster.request("invoices", ApiRequster.MHETOD_GET, 21,useToken: true);
+  }
+  getInvoiceBylink(id){
+    // isloading(true);
+    apiRequster.request("invoices/${id}/link", ApiRequster.MHETOD_GET, 22,useToken: true);
+  }
+
+
   void parseJsonFromGetWalletBalance(source) {
    // print('ProfileControllers.parseJsonFromGetWalletBalance = ${source}');
     var balance  =jsonDecode(source)['available'][0]['amount'];
@@ -386,18 +476,37 @@ class ProfileControllers extends GetxController implements RequestInterface {
   }
 
   void pareJsonFromStripe(source) {
-   // print('ProfileControllers.pareJsonFromStripe = ${source}');
-    isStripeConnected = true;
+    print('ProfileControllers.pareJsonFromStripe = ${source}');
+    isBillingStripeConnected = jsonDecode(source)['enabled'];
+    var balance = jsonDecode(source)['debt'];
+    Get.find<WrapperController>().walletBalance = balance.toString();
+
+    update();
+
+  }
+  void pareJsonFromPayout(source) {
+    print('ProfileControllers.pareJsonFromStripe = ${source}');
+    isIncomeStripeConnected = jsonDecode(source)['enabled'];
 
     update();
 
   }
 
   void pareJsonFromStripeConnect(source) {
-    isStripeConnected = true;
 
     update();
-    var url = jsonDecode(source)['url'];
+    var url = jsonDecode(source)['link'];
+
+    try {
+      launchUrlString(url);
+    }  catch (e) {
+      // TODO
+    }
+  }
+  void pareJsonFromPayoutConnect(source) {
+
+    update();
+    var url = jsonDecode(source)['link'];
 
     try {
       launchUrlString(url);
@@ -406,13 +515,14 @@ class ProfileControllers extends GetxController implements RequestInterface {
     }
   }
 
-  void parseJsonFromGateWay(source) {
+  void parseJsonFromGateWay(source) async{
     isloadingWallet(false);
     log('ProfileControllers.parseJsonFromGateWay = ${source}');
 
     try {
     var url = jsonDecode(source)['url'];
-      launchUrlString(url);
+     await launchUrlString(url);
+    getStripe();
     }  catch (e) {
       // TODO
     }
@@ -427,8 +537,8 @@ class ProfileControllers extends GetxController implements RequestInterface {
       if (pickedFile != null) {
         File imageFile = File(pickedFile.path);
         List<int> imageBytes = await imageFile.readAsBytes();
-        uploadFileWithDio(imageFile);
         String base64Image = base64Encode(imageBytes);
+        uploadFileWithDio(base64Image);
 
 
         await uploadImage(base64Image);
@@ -465,23 +575,25 @@ class ProfileControllers extends GetxController implements RequestInterface {
     // }
     // return status.isGranted;
   }
-  Future<void> uploadFileWithDio(File imageFile) async {
+  Future<void> uploadFileWithDio(String imageFile) async {
     var dio = Dio();
-    var formData = d.FormData.fromMap({
-      'image': await d.MultipartFile.fromFile(imageFile.path,
-          filename: 'uploadfile'),
-    });
 
     dio.interceptors.add(MediaVerseConvertInterceptor());
 
+    print('ProfileControllers.uploadFileWithDio = ${
+        model.iso
+    }');
     try {
       var response = await dio.put(
         '${Constant.HTTP_HOST}profile',
-        data: formData,
+        data: {
+          "image":imageFile,
+          "country_iso":model.iso,
+        },
         options: Options(
           headers: {
             'Authorization': 'Bearer ${GetStorage().read("token")}',
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'application/json',
             'X-App': '_Android',
           },
         ),
@@ -507,6 +619,25 @@ class ProfileControllers extends GetxController implements RequestInterface {
       }
     } on DioError catch (e) {
       print('DioError: ${e.message}');
+    }
+  }
+
+  void pareJsonFromBills(source) {
+
+  }
+
+  void pareJsonFromInoice(source) {
+
+  }
+
+  void pareJsonFromInoiceByLink(source) async{
+
+    try {
+      var url = jsonDecode(source)['url'];
+      await launchUrlString(url);
+      getStripe();
+    }  catch (e) {
+      // TODO
     }
   }
 

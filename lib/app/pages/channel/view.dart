@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:mediaverse/app/common/app_icon.dart';
+import 'package:mediaverse/app/common/font_style.dart';
+import 'package:mediaverse/app/pages/channel/tab/calendar_tab.dart';
 import 'package:mediaverse/app/pages/channel/tab/channel_tab.dart';
 import 'package:mediaverse/app/pages/channel/widgets/custom_calendar_widget.dart';
+
 import '../../common/app_color.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../common/app_icon.dart';
 import '../../common/app_route.dart';
-import '../../common/font_style.dart';
 import '../share_account/logic.dart';
 
 class ChannelScreen extends StatefulWidget {

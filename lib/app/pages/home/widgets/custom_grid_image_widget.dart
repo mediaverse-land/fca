@@ -16,16 +16,17 @@ class CustomGridImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
 
 
+    if(mostViews.length<3)return Container();
     var sizeWidth = (33.w - 20);
     return Container(
       width: 100.w,
       child: Row(
-        children: isReversed ? _buildReversedLayout(sizeWidth) : _buildNormalLayout(sizeWidth),
+        children: isReversed ? _buildReversedLayout(sizeWidth) : _buildNormalLayout(sizeWidth,mostViews.length),
       ),
     );
   }
 
-  List<Widget> _buildNormalLayout(double sizeWidth) {
+  List<Widget> _buildNormalLayout(double sizeWidth, int length) {
     return [
       Column(
         children: List.generate(3, (index) => _buildImageContainer(mostViews[index], sizeWidth)),
@@ -50,14 +51,18 @@ class CustomGridImageWidget extends StatelessWidget {
   Widget _buildRightSide(double sizeWidth) {
     return Column(
       children: [
-        _buildImageContainer(mostViews[2], sizeWidth * 2 + 10, isLarge: true),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildImageContainer(mostViews[3], sizeWidth),
-            _buildImageContainer(mostViews[4], sizeWidth),
-          ],
-        ),
+        if (mostViews.length > 2)
+          _buildImageContainer(mostViews[2], sizeWidth * 2 + 10, isLarge: true),
+        if (mostViews.length > 3 || mostViews.length > 4)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              if (mostViews.length > 3)
+                _buildImageContainer(mostViews[3], sizeWidth),
+              if (mostViews.length > 4)
+                _buildImageContainer(mostViews[4], sizeWidth),
+            ],
+          ),
       ],
     );
   }
@@ -65,7 +70,7 @@ class CustomGridImageWidget extends StatelessWidget {
   Widget _buildImageContainer(dynamic data, double size, {bool isLarge = false}) {
     return  GestureDetector(
       onTap: (){
-        int itemId = data['id'];
+        String itemId = data['id'];
         Get.toNamed(PageRoutes.DETAILIMAGE, arguments: {'id': itemId});
       },
       child: Container(

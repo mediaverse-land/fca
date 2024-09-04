@@ -1,4 +1,5 @@
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -81,27 +82,28 @@ class LoginScreen extends StatelessWidget {
                     SizedBox(
                       height: 10.h,
                     ),
-                    GestureDetector(
-                      //go to login screen
-                      onTap: () {},
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'login_18'.tr,
-                            style: textTheme.bodySmall,
-                          ),
-                          SizedBox(
-                            width: 1.w,
-                          ),
-                          Text(
-                            'login_18'.tr,
-                            style: textTheme.bodySmall!
-                                .copyWith(color: AppColor.primaryLightColor),
-                          )
-                        ],
-                      ),
-                    ),
+                    ///Deleted We Dont have a sign up form
+                    // GestureDetector(
+                    //   //go to login screen
+                    //   onTap: () {},
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       Text(
+                    //         'login_18'.tr,
+                    //         style: textTheme.bodySmall,
+                    //       ),
+                    //       SizedBox(
+                    //         width: 1.w,
+                    //       ),
+                    //       Text(
+                    //         'login_18'.tr,
+                    //         style: textTheme.bodySmall!
+                    //             .copyWith(color: AppColor.primaryLightColor),
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
                     SizedBox(
                       height: 2.h,
                     ),
@@ -114,6 +116,16 @@ class LoginScreen extends StatelessWidget {
                           title: 'login_9'.tr,
                           isloading: logic.isloading.value);
                     }),
+                    SizedBox(
+                      height: 3.h,
+                    ),
+                    GoogleCustomRegisterButtonWidget(onTap: () {
+                      //  logic.requestLogin();
+                      //signInWithGoogle();
+                      _googleLogIn();
+                    },
+                        title: 'login_9_1'.tr,
+                        isloading: false),
                     SizedBox(
                       height: 3.h,
                     ),
@@ -173,27 +185,31 @@ class LoginScreen extends StatelessWidget {
             SizedBox(
               height: 3.h,
             ),
-            InkWell(
-                onTap: () {
-                  logic.loginEnum = LoginEnum.username;
-                  logic.update();
-                },
-                child: Text(
-                  "login_5".tr,
-                  style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
-                )),
-            SizedBox(
-              height: 2.h,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                    onTap: () {
+                      logic.loginEnum = LoginEnum.username;
+                      logic.update();
+                    },
+                    child: Text(
+                      ("login_5".tr) +" / ",
+                      style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
+                    )),
+                InkWell(
+                    onTap: () {
+                      logic.loginEnum = LoginEnum.SMS;
+                      logic.update();
+                    },
+                    child: Text(
+                      "login_20".tr,
+                      style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
+                    )),
+              ],
             ),
-          InkWell(
-                onTap: () {
-                  logic.loginEnum = LoginEnum.SMS;
-                  logic.update();
-                },
-                child: Text(
-                  "login_20".tr,
-                  style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
-                )),
+
+
             SizedBox(
               height: 2.h,
             ),
@@ -265,27 +281,34 @@ class LoginScreen extends StatelessWidget {
               height: 3.h,
             ),
 
-            InkWell(
-                onTap: () {
-                  logic.loginEnum = LoginEnum.phone;
-                  logic.update();
-                },
-                child: Text(
-                  "login_17".tr,
-                  style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
-                )),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                    onTap: () {
+                      logic.loginEnum = LoginEnum.phone;
+                      logic.update();
+                    },
+                    child: Text(
+                      ("login_12".tr) + " /  ",
+                      style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
+                    )),
+                InkWell(
+                    onTap: () {
+                      logic.loginEnum = LoginEnum.SMS;
+                      logic.update();
+                    },
+                    child: Text(
+                      "login_20".tr,
+                      style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
+                    )),
+              ],
+            ),
             SizedBox(
               height: 2.h,
             ),
-            InkWell(
-                onTap: () {
-                  logic.loginEnum = LoginEnum.SMS;
-                  logic.update();
-                },
-                child: Text(
-                  "login_20".tr,
-                  style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
-                )),
+
 
 
           ],
@@ -312,27 +335,31 @@ class LoginScreen extends StatelessWidget {
             SizedBox(
               height: 3.h,
             ),
-            InkWell(
-                onTap: () {
-                  logic.loginEnum = LoginEnum.username;
-                  logic.update();
-                },
-                child: Text(
-                  "login_5".tr,
-                  style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
-                )),
-            SizedBox(
-              height: 2.h,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                    onTap: () {
+                      logic.loginEnum = LoginEnum.username;
+                      logic.update();
+                    },
+                    child: Text(
+                      ("login_5".tr) + " /  ",
+                      style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
+                    )),
+                InkWell(
+                    onTap: () {
+                      logic.loginEnum = LoginEnum.phone;
+                      logic.update();
+                    },
+                    child: Text(
+                      "login_12".tr.substring("login_12".tr.indexOf("p")),
+                      style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
+                    )),
+              ],
             ),
-            InkWell(
-                onTap: () {
-                  logic.loginEnum = LoginEnum.phone;
-                  logic.update();
-                },
-                child: Text(
-                  "login_17".tr,
-                  style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
-                )),
+
+         
             SizedBox(
               height: 2.h,
             ),
@@ -342,6 +369,7 @@ class LoginScreen extends StatelessWidget {
 
     }
   }
+
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
       'email',
@@ -367,5 +395,40 @@ class LoginScreen extends StatelessWidget {
   }
   void _googleLogIn() async{
     signInWithGoogle();
+  }
+}
+class Authentication {
+  static Future<User?> signInWithGoogle() async {
+    print('Authentication.signInWithGoogle 1 ');
+    FirebaseAuth auth = FirebaseAuth.instance;
+    print('Authentication.signInWithGoogle 2 ');
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    print('Authentication.signInWithGoogle 3 ');
+
+    final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+    print('Authentication.signInWithGoogle 4 ');
+    if (googleSignInAccount != null) {
+    print('Authentication.signInWithGoogle 5 ');
+      final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+    print('Authentication.signInWithGoogle 6 ');
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+    print('Authentication.signInWithGoogle 7 ');
+
+      try {
+    print('Authentication.signInWithGoogle 7 ');
+        final UserCredential userCredential = await auth.signInWithCredential(credential);
+    print('Authentication.signInWithGoogle 8 ${userCredential.credential!.accessToken}');
+        return userCredential.user;
+      } on FirebaseAuthException catch (e) {
+    print('Authentication.signInWithGoogle 9 ');
+        // Handle error
+      }
+    }
+    print('Authentication.signInWithGoogle 10 ');
+    return null;
   }
 }

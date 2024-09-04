@@ -11,7 +11,6 @@ import 'package:mediaverse/app/pages/plus_section/widget/secned_form.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../common/app_color.dart';
-import '../../signup/widgets/custom_text_field_form_register_widget.dart';
 import 'custom_plan_text_filed.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -26,7 +25,6 @@ import 'package:mediaverse/app/pages/plus_section/widget/secned_form.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../common/app_color.dart';
-import '../../signup/widgets/custom_text_field_form_register_widget.dart';
 import 'custom_plan_text_filed.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -41,7 +39,6 @@ import 'package:mediaverse/app/pages/plus_section/widget/secned_form.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../common/app_color.dart';
-import '../../signup/widgets/custom_text_field_form_register_widget.dart';
 import 'custom_plan_text_filed.dart';
 
 class FirstForm extends StatefulWidget {
@@ -119,15 +116,15 @@ class _FirstFormState extends State<FirstForm> {
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("plus_5".tr,style: TextStyle(color: Colors.white,
+                            Text("signup_10_1".tr,style: TextStyle(color: Colors.white,
                                 fontWeight: FontWeight.bold),),
                             CustomTDropDownPlusWidget(
                                 models:widget.logic.countreisString,
                                 context: context,
                                 textEditingController: widget.logic.languageController,
 
-                                titleText: 'plus_6'.tr,
-                                hintText: 'plus_7'.tr,
+                                titleText: 'signup_10_1'.tr,
+                                hintText: 'signup_10_1'.tr,
                                 needful: false),
                           ],
                         ),
@@ -138,6 +135,7 @@ class _FirstFormState extends State<FirstForm> {
                           children: [
                             Text("plus_8".tr,style: TextStyle(color: Colors.white,
                                 fontWeight: FontWeight.bold),),
+
                             CustomTDropDownPlusWidget(
                                 models:Constant.generes,
                                 context: context,

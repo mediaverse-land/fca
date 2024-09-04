@@ -94,12 +94,13 @@ class LiveController extends GetxController{
   var isSuccessRecord = false.obs;
 
   void postTimeRecord(int channelId) async {
+
     Get.back();
     try {
       isLoadingRecord.value = true;
 
       final token = GetStorage().read("token");
-      String apiUrl = 'https://api.mediaverse.land/v2/jobs/channel-record';
+      String apiUrl = 'https://api.mediaverse.app/v2/tasks/channel-record';
       var response = await Dio().post(
         apiUrl,
         data: {
@@ -109,7 +110,6 @@ class LiveController extends GetxController{
         options: Options(
           headers: {
             'accept': 'application/json',
-            'Content-Type': 'application/json',
             'X-App': '_Android',
             'Accept-Language': 'en-US',
             'Authorization': 'Bearer $token',
@@ -120,40 +120,34 @@ class LiveController extends GetxController{
       if (response.statusCode == 200) {
         print(response.data);
         isSuccessRecord.value = true;
-        Get.snackbar('Success', "Recording...",
-            backgroundColor: Colors.green,
-            icon: Icon(Icons.fiber_smart_record_sharp));
+        Get.snackbar('Success', "Recording..." ,
+        backgroundColor: Colors.green,
+          icon: Icon(Icons.fiber_smart_record_sharp)
+        );
+
       } else {
         print("statusCode: ${response.statusCode}");
-        print("Response data: ${response.data}");
         isSuccessRecord.value = false;
-        Get.snackbar('Error', "Try again!",
+        Get.snackbar('Error', "Try again!" ,
             backgroundColor: Colors.red,
-            icon: Icon(Icons.info));
+            icon: Icon(Icons.info)
+        );
       }
-    } on DioError catch (e) {
-      print("DioError: ${e.message}");
-      if (e.response != null) {
-        print("Response data: ${e.response?.data}");
-        print("Response headers: ${e.response?.headers}");
-      }
-      isSuccessRecord.value = false;
-      Get.snackbar('Error', "Try again!",
-          backgroundColor: Colors.yellow,
-          icon: Icon(Icons.info));
     } catch (e) {
-      print("Unexpected error: $e");
+      print("$e");
       isSuccessRecord.value = false;
-      Get.snackbar('Error', "Try again!",
+
+      Get.snackbar('Error', "Try again!" ,
           backgroundColor: Colors.yellow,
-          icon: Icon(Icons.info));
+          icon: Icon(Icons.info)
+      );
     } finally {
-      Future.delayed(Duration(seconds: getTimeRecord(selectedIndex))).then((value) {
+      Future.delayed(Duration(seconds:getTimeRecord(selectedIndex) )).then((value) {
         isLoadingRecord.value = false;
       });
+    //  isLoadingRecord.value = false;
     }
   }
-
 
 
 

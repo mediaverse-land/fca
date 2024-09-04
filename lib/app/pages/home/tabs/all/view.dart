@@ -32,122 +32,126 @@ class AllTabScreen extends StatelessWidget {
 
           logic.getMainReueqst();
         },
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 16.h),
-                TitleExplore(
-                    isViewAll: true,
-                    viewAllTap: (){
-                      Get.toNamed(PageRoutes.ViewAllChannel);
-                    },
-                    theme: theme, textTheme: textTheme, icon: AppIcon.videoIcon, title: 'home_1'.tr),
-                SizedBox(height: 1.5.h),
-                SizedBox(
-                  height: 21.h,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: 16.h),
+              TitleExplore(
+                  isViewAll: true,
+                  viewAllTap: (){
+                    Get.toNamed(PageRoutes.ViewAllChannel);
+                  },
+                  theme: theme, textTheme: textTheme, icon: AppIcon.videoIcon, title: 'home_1'.tr),
+              SizedBox(height: 1.5.h),
+              SizedBox(
+                height: 21.h,
 
-                  child: ListView.builder(
-                      itemCount: logic.channels.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                            onTap: (){
-                              print('AllTabScreen.build');
-                              final channelId = logic.channels[index].id;
-                             Get.toNamed(PageRoutes.LIVE , arguments: {'channelId': channelId},preventDuplicates: false);
+                child: ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: logic.channels.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                          onTap: (){
+                            print('AllTabScreen.build');
+                            final channelId = logic.channels[index].id;
+                            Get.toNamed(PageRoutes.LIVE , arguments: {'channelId': channelId},preventDuplicates: false);
 
 
-                            },
-                            child: BestChannelsWidget(model: logic.channels.elementAt(index)
-                            )
-                        );
-                      }),
-                ),
-                SizedBox(height: 1.5.h),
+                          },
+                          child: BestChannelsWidget(model: logic.channels.elementAt(index)
+                          )
+                      );
+                    }),
+              ),
+              SizedBox(height: 1.5.h),
 
-                Visibility(
-                  visible: logic.bestVideos.isNotEmpty,
-                  child: Column(
-                    children: [
-                      TitleExplore(theme: theme, textTheme: textTheme, icon: AppIcon.videoIcon, title: 'home_2'.tr,                    isViewAll: true,
+              Visibility(
+                visible: logic.bestVideos.isNotEmpty,
+                child: Column(
+                  children: [
+                    TitleExplore(theme: theme, textTheme: textTheme, icon: AppIcon.videoIcon, title: 'home_2'.tr,                    isViewAll: true,
 
-                        viewAllTap: (){
+                      viewAllTap: (){
 
                         Get.to(BestVideoScreenPage());
                       },),
-                      SizedBox(height: 1.5.h),
-                      SizedBox(
-                        height: 30.h,
-                        child: ListView.builder(
-                            itemCount: logic.bestVideos.length,
-                            scrollDirection: Axis.horizontal,
-                            reverse: true,
-                            itemBuilder: (context, index) {
-                              return BestItemExploreWidget(logic.bestVideos.elementAt(index));
-                            }),
-                      ),
-                      SizedBox(height: 3.h),
-                    ],
-                  ),
+                    SizedBox(height: 1.5.h),
+                    SizedBox(
+                      height: 30.h,
+                      child: ListView.builder(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          itemCount: logic.bestVideos.length,
+                          scrollDirection: Axis.horizontal,
+                          reverse: false,
+                          itemBuilder: (context, index) {
+                            return BestItemExploreWidget(logic.bestVideos.elementAt(index));
+                          }),
+                    ),
+                    SizedBox(height: 3.h),
+                  ],
                 ),
-                TitleExplore(theme: theme, textTheme: textTheme, icon: AppIcon.imageIcon, title: 'home_3'.tr,
+              ),
+              if(logic.mostImages.length>3)   TitleExplore(theme: theme, textTheme: textTheme, icon: AppIcon.imageIcon, title: 'home_3'.tr,
                 isViewAll: true,viewAllTap: (){
-                    Get.to(ViewAllGrdiScreen(),arguments: [3]);
-                  },),
-                SizedBox(height: 12.5),
-               if(logic.mostImages.length>0) CustomGridImageWidget(logic.mostImages),
-                SizedBox(height: 3.h),
-                Visibility(
-                  visible: logic.mostText.isNotEmpty,
-                  child: Column(
-                    children: [
-                      TitleExplore(theme: theme, textTheme: textTheme,
-                          icon: "assets/icons/text_icon.svg", title: 'home_4'.tr , isViewAll: true,viewAllTap: (){
-                          Get.to(ViewAllGrdiScreen(),arguments: [5]);
-                        },),
-                      SizedBox(height: 1.5.h),
-                      SizedBox(
-                        height: 40.w,
-                        child: ListView.builder(
-                            itemCount: logic.mostText.length,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              return  GestureDetector(
-                                  onTap: (){
-                                    int itemId = logic.mostText[index]['id'];
-                                    Get.toNamed(PageRoutes.DETAILTEXT, arguments: {'id': itemId});
-                                  },
-                                  child: BestTextWidget(model: logic.mostText.elementAt(index)));
-                            }),
-                      ),
-                      SizedBox(height: 6.h),
-                    ],
-                  ),
-                ),
-                TitleExplore(theme: theme, textTheme: textTheme, icon: "assets/icons/sound_icon.svg", title: 'home_5'.tr , isViewAll: true,viewAllTap: (){
-                  Get.to(ViewAllGrdiScreen(),arguments: [4]);
+                  Get.to(ViewAllGrdiScreen(),arguments: [3]);
                 },),
-                SizedBox(height: 1.5.h),
-                SizedBox(
-                  height: 30.h,
-                  child: ListView.builder(
-                      itemCount: logic.mostSongs.length,
-                      scrollDirection: Axis.horizontal,
-                      reverse: true,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                            onTap: (){
-                              int itemId = logic.mostSongs[index]['id'];
-                              Get.toNamed(PageRoutes.DETAILMUSIC, arguments: {'id': itemId});
-                            },
-                            child: BestItemSongsWidget(logic.mostSongs.elementAt(index)));
-                      }),
+              SizedBox(height: 12.5),
+              if(logic.mostImages.length>0) Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: CustomGridImageWidget(logic.mostImages),
+              ),
+              SizedBox(height: 3.h),
+              Visibility(
+                visible: logic.mostText.isNotEmpty,
+                child: Column(
+                  children: [
+                    TitleExplore(theme: theme, textTheme: textTheme,
+                      icon: "assets/icons/text_icon.svg", title: 'home_4'.tr , isViewAll: true,viewAllTap: (){
+                        Get.to(ViewAllGrdiScreen(),arguments: [5]);
+                      },),
+                    SizedBox(height: 1.5.h),
+                    SizedBox(
+                      height: 40.w,
+                      child: ListView.builder(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          itemCount: logic.mostText.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            return  GestureDetector(
+                                onTap: (){
+                                  String itemId = logic.mostText[index]['id'];
+                                  Get.toNamed(PageRoutes.DETAILTEXT, arguments: {'id': itemId});
+                                },
+                                child: BestTextWidget(model: logic.mostText.elementAt(index)));
+                          }),
+                    ),
+                    SizedBox(height: 6.h),
+                  ],
                 ),
-                SizedBox(height: 13.5.h),
-              ],
-            ),
+              ),
+              TitleExplore(theme: theme, textTheme: textTheme, icon: "assets/icons/sound_icon.svg", title: 'home_5'.tr , isViewAll: true,viewAllTap: (){
+                Get.to(ViewAllGrdiScreen(),arguments: [4]);
+              },),
+              SizedBox(height: 1.5.h),
+              SizedBox(
+                height: 30.h,
+                child: ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: logic.mostSongs.length,
+                    scrollDirection: Axis.horizontal,
+                    reverse: true,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                          onTap: (){
+                            String itemId = logic.mostSongs[index]['id'];
+                            Get.toNamed(PageRoutes.DETAILMUSIC, arguments: {'id': itemId});
+                          },
+                          child: BestItemSongsWidget(logic.mostSongs.elementAt(index)));
+                    }),
+              ),
+              SizedBox(height: 13.5.h),
+            ],
           ),
         ),
       ),

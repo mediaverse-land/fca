@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:mediaverse/app/common/RequestInterface.dart';
@@ -42,7 +43,25 @@ class HomeLogic extends GetxController implements  RequestInterface{
   void onReady() {
     // TODO: implement onReady
     super.onReady();
-    apiRequster  = ApiRequster(this,develperModel: false);
+    apiRequster  = ApiRequster(this,develperModel: true);
+
+    try {
+      print('HomeLogic.onReady 1');
+       FirebaseAnalytics.instance.logEvent(
+        name: "share_image",
+        parameters: {
+          "image_name": "name",
+          "full_text": "text",
+        },
+      );
+      FirebaseAnalytics.instance.logEvent(name: "Entered The Setting ");
+    }  catch (e) {
+      // TODO
+      print('HomeLogic.onReady catch');
+    }finally{
+      print('HomeLogic.onReady finally');
+
+    }
 
     getMainReueqst();
   }
@@ -107,11 +126,12 @@ class HomeLogic extends GetxController implements  RequestInterface{
 
 
 
-    _getMostVideos();
+    _getMostImages();
   }
 
-  void _getMostVideos() {
+  void _getMostImages() {
     apiRequster.request("images/most-viewed", ApiRequster.MHETOD_GET, 3);
+
 
   }
   void _getMostText() {

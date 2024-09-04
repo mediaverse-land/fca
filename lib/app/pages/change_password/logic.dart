@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mediaverse/app/common/RequestInterface.dart';
+import 'package:mediaverse/app/common/app_api.dart';
+import 'package:mediaverse/app/common/app_config.dart';
 
-import '../../common/RequestInterface.dart';
-import '../../common/app_api.dart';
 import '../../common/app_color.dart';
-import '../../common/app_config.dart';
 import 'state.dart';
 
 class ChangePasswordLogic extends GetxController implements  RequestInterface{

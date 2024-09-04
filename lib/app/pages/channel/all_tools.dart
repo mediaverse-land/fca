@@ -2,12 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:mediaverse/app/common/app_route.dart';
+import 'package:mediaverse/app/pages/channel/control_room/view.dart';
 import 'package:mediaverse/app/pages/channel/view.dart';
 import 'package:mediaverse/app/pages/channel/widgets/all_tools_button.dart';
+import 'package:mediaverse/app/pages/media_suit/view.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../common/app_color.dart';
-import '../../common/app_route.dart';
 
 class AllToolsScreen extends StatefulWidget {
   const AllToolsScreen({super.key});

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mediaverse/app/common/app_extension.dart';
-import 'package:mediaverse/app/common/app_extension.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../common/app_color.dart';

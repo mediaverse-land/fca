@@ -5,11 +5,12 @@ const Map<String, String> enUS = {
   "login_2":"Insert cellphone..",
   "login_3":"Insert password..",
   "login_4":"Password",
-  "login_5":"Log in with email/Username",
+  "login_5":"Log in with Username",
   "login_6":"Log in with username",
   "login_7":"Dont have an account?",
   "login_8":"Signup",
   "login_9":"Log in",
+  "login_9_1":"Log in With Google",
   "login_10":"Email",
   "login_11":"Insert email..",
   "login_12":"Log in with phone",
@@ -17,10 +18,10 @@ const Map<String, String> enUS = {
   "login_14":"Insert your usemame to login",
   "login_15":"Username/Email",
   "login_16":"Insert username...",
-  "login_17":"Log in with phone",
+  "login_17":"Log in with Password",
   "login_18":"Dont have an account?",
   "login_19":"Signup",
-  "login_20":"Login With SMS",
+  "login_20":"OTP",
 
 
 
@@ -76,7 +77,10 @@ const Map<String, String> enUS = {
   "channel_33":"CG & Playout",
   "channel_34":"AI & Production",
   "channel_35":"Search",
-  "channel_36":"Channels",
+  "channel_36":"Billing",
+  "channel_37":"Invoice",
+  "channel_38":"Income",
+  "channel_39":"Package",
 
 
   "details_1":"Comments",
@@ -277,6 +281,7 @@ const Map<String, String> enUS = {
   "setting_4":"Seassions",
   "setting_5":"Change Password",
   "setting_6":"Sign out",
+  "setting_6_1":"Delete Account",
   "setting_7":"First Name",
   "setting_8":"Insert your First name",
   "setting_9":"Last Name",
@@ -288,6 +293,9 @@ const Map<String, String> enUS = {
   "setting_15":"Massage",
   "setting_16":"Wallet",
   "setting_17":" Account Center ",
+  "delete_1":" Are You Sure the Delete Account ?",
+  "delete_2":" Yes",
+  "delete_3":" No",
 
 
   "share_1":"Add Channel",
@@ -332,12 +340,13 @@ const Map<String, String> enUS = {
   "signup_8":"Username",
   "signup_9":"Insert your username",
   "signup_10":"Have an account?",
+  "signup_10_1":"Country",
   "signup_11":"Log in",
   "signup_12":"Save",
 
 
 
-  "transaction_1":"Transaction History",
+  "transaction_1":"Billing History",
 
 
 
@@ -355,10 +364,10 @@ const Map<String, String> enUS = {
 
 
   "wallet_1":"Inventory",
-  "wallet_2":"History",
+  "wallet_2":"Billing",
   "wallet_3":"*** *** *** 2197",
-  "wallet_4":"Add card",
-  "wallet_5":"Add inventory",
+  "wallet_4":"Connect To the Stripe",
+  "wallet_5":"Subscription Setting",
 
 
 

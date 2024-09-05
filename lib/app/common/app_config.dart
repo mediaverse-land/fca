@@ -7,7 +7,7 @@ import 'package:sizer/sizer.dart';
 import 'app_color.dart';
 
 class Constant {
-  static Map<dynamic, String> reverseMap(Map<String, dynamic> originalMap) {
+ static Map<dynamic, String> reverseMap(Map<String, dynamic> originalMap) {
     Map<dynamic, String> reversedMap = {};
 
     originalMap.forEach((key, value) {
@@ -385,7 +385,7 @@ class Constant {
 
   static bool isTabletMode = SizerUtil.deviceType == DeviceType.tablet;
   static String HTTP_HOST ="https://api.mediaverse.land/v2/";
-
+  static bool mediaverseAPP =false;
   static getPlanByDropDown(var s) {
     switch (s) {
       case "Free":
@@ -431,7 +431,7 @@ class Constant {
 
 
   static debugLog(String log){
-    if(kDebugMode) print('Constant.debugLog = $log');
+   if(kDebugMode) print('Constant.debugLog = $log');
   }
 
 }

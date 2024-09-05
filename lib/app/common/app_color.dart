@@ -7,7 +7,7 @@ double withSize = 0;
 double hightSize = 0;
 TextStyle fontStyle(double fontSize, fontWeight) {
   return TextStyle(
-    fontFamily: 'vazir',
+    fontFamily: 'Ravi',
     fontSize: fontSize,
     fontWeight: fontWeight,
   );
@@ -47,7 +47,7 @@ class AppTheme {
   static ThemeData get lightMode => ThemeData(
         useMaterial3: true,
        // brightness: Brightness.light,
-        scaffoldBackgroundColor: AppColor.whiteColor,
+        scaffoldBackgroundColor: AppColor.whiteColor,fontFamily: "Ravi",
         colorScheme: ColorScheme(
           primary: AppColor.primaryDarkColor,
           brightness: Brightness.dark,
@@ -75,7 +75,7 @@ class AppTheme {
 
   static ThemeData get darkMode => ThemeData(
         useMaterial3: true,
-       brightness: Brightness.dark,
+       brightness: Brightness.dark,fontFamily: "Ravi",
 
        /// brightness: Brightness.dark,
         colorScheme: ColorScheme(

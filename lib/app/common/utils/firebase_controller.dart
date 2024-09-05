@@ -11,9 +11,9 @@ import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mediaverse/app/common/app_route.dart';
 import 'package:meta/meta.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../../firebase_options.dart';
+import '../../pages/media_suit/logic.dart';
 import '../RequestInterface.dart';
 import '../app_api.dart';
 
@@ -26,20 +26,11 @@ class FirebaseController extends GetxController implements RequestInterface {
 
   late FirebaseMessaging _firebaseMessaging;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
 
   var box = GetStorage();
   late ApiRequster apiRequster;
-  void initNotif() async{
 
-
-    await Permission.notification.isDenied.then((value) {
-      if (value) {
-        print('initNotif');
-        Permission.notification.request();
-      }
-    });
-  }
   init() async {
     onReady();
     await Firebase.initializeApp(
@@ -102,7 +93,7 @@ class FirebaseController extends GetxController implements RequestInterface {
 
   void initializeLocalNotifications() {
     var initializationSettingsAndroid =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettingsIOS = DarwinInitializationSettings();
     var initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
@@ -110,10 +101,10 @@ class FirebaseController extends GetxController implements RequestInterface {
     );
     _flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveBackgroundNotificationResponse:
-        FirebaseController.onDidReceiveBackgroundNotificationResponse,
+            FirebaseController.onDidReceiveBackgroundNotificationResponse,
         onDidReceiveNotificationResponse: (s) {
-          sendToAssetPage(s.payload ?? "");
-        });
+      sendToAssetPage(s.payload ?? "");
+    });
   }
 
   void listenToFCMMessages() {
@@ -121,19 +112,28 @@ class FirebaseController extends GetxController implements RequestInterface {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       print("onMessageOpenedApp: $message");
 
-      FirebaseController.sendToAssetPage( jsonEncode(jsonDecode(message.data['result'])));
+      FirebaseController.sendToAssetPage( jsonEncode(message.data));
     });
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        //debugger();
-      initNotif();
-      print('FirebaseController.listenToFCMMessages = ${message}');
-     // debugger();
-      showNotification(message);
+      print('FirebaseController.listenToFCMMessages = ${message} - ${Get.currentRoute}');
+      if(Get.currentRoute.contains(PageRoutes.MEDIASUIT)){
+        if (Get.find<MediaSuitController>().isloadingSubmit.value) {
+          Get.find<MediaSuitController>().isloadingSubmit(false);
+          sendToAssetPage(jsonEncode(message.data));
+        }
+        if (Get.find<MediaSuitController>().isWaitingAssetConvert.value) {
+          Get.find<MediaSuitController>().isWaitingAssetConvert(false);
+
+          Get.find<MediaSuitController>().setAssetLoadingValue(jsonEncode(message.data));
+        }
+      }else{
+        showNotification(message);
+      }
     });
   }
 
   void showNotification(RemoteMessage message) {
-    //debugger();
+     //debugger();
     var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
       'MediaVerse_0',
       'MediaVerse',
@@ -153,9 +153,7 @@ class FirebaseController extends GetxController implements RequestInterface {
           message.notification!.body.toString(), // Notification Body
           platformChannelSpecifics,
           //   payload: message.data
-          payload: jsonEncode(message.data)
-
-      );
+          payload: jsonEncode(message.data));
     } catch (e) {
       _flutterLocalNotificationsPlugin.show(
         0, // Notification ID

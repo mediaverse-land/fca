@@ -144,7 +144,7 @@ class PageRoutes {
 
     GetPage(
       name: PageRoutes.DETAILVIDEO,
-      transition: Transition.rightToLeft,
+      transition: Transition.downToUp,
       page: () => DetailVideoScreen(),
       bindings: [
         DetailState(),
@@ -224,7 +224,9 @@ class PageRoutes {
     ),
     GetPage(
       name: PageRoutes.MEDIASUIT,
-      page: () => MediaSuitScreen(),
+        transition: Transition.rightToLeft,
+
+        page: () => MediaSuitScreen(),
       bindings:       [  MediaSuitState() , DetailState()]
     ),
     GetPage(

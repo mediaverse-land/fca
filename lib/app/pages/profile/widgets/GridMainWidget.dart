@@ -271,7 +271,7 @@ class _GridPostView2State extends State<GridPostView2> {
 
     if (isSelected) {
       Get.find<MediaSuitController>().addItemToTempList(
-        widget.model['name'].toString(),
+        widget.model['media']['name'].toString(),
         widget.model['file']['url'],
         widget.model['length'],
         widget.model['file_id'].toString(),
@@ -301,7 +301,7 @@ class _GridPostView2State extends State<GridPostView2> {
       child: GestureDetector(
 
         onTap:Get.arguments == 'edit_screen' ? toggleSelection:Get.arguments == 'onTapChannelManagement' ? (){
-          Get.find<ShareAccountLogic>().setModelShareData(widget.model['name'].toString() ,widget.model['file_id']);
+          Get.find<ShareAccountLogic>().setModelShareData(widget.model['media']['name'].toString() ,widget.model['file_id']);
 
           Get.back();
 
@@ -470,8 +470,10 @@ class _GridPostView2State extends State<GridPostView2> {
 
   void _getRouteAndPushIt(model) {
     String route = "";
-    debugger();
+    //debugger();
+
     print('_GridPostViewState._getRouteAndPushIt 2  = ${widget.model} -  ${widget.model['media_type']} - ${model}');
+
     switch(widget.model['media_type']){
       case 1:
         route = PageRoutes.DETAILTEXT;

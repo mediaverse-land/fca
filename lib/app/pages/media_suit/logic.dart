@@ -561,7 +561,7 @@ class MediaSuitController extends GetxController {
     } else if (mediaClass == 3) {
       tempSelectedItems.add(EditDataModel(name, url, 0, assetId, 3 ,isloading: isloading));
     } else if (mediaClass == 4) {
-      tempSelectedItems.add(EditDataModel(name, url, widthVideoItem.toDouble(), assetId, 4, isloading: isloading));
+      tempSelectedItems.add(EditDataModel(name, url, widthVideoItem, assetId, 4, isloading: isloading));
 
     } else {
 

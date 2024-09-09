@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 //import 'package:dio/dio.dart' as d;
 import 'package:get_storage/get_storage.dart';
+import 'package:mediaverse/app/pages/share_account/widgets/program_bottom_sheet.dart';
+import 'package:mediaverse/gen/model/json/FromJsonGetProfile.dart';
+import 'package:mediaverse/gen/model/json/walletV2/FromJsonGetPrograms.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:mediaverse/app/common/app_extension.dart';
@@ -17,6 +20,7 @@ import 'package:sizer/sizer.dart';
 
 import '../../../gen/model/json/FromJsonGetCalender.dart';
 import '../../../gen/model/json/FromJsonGetMesseges.dart';
+import '../../../gen/model/json/walletV2/FromJsonGetExternalAccount.dart';
 import '../../common/RequestInterface.dart';
 import '../../common/app_api.dart';
 import '../../common/app_color.dart';
@@ -66,10 +70,12 @@ class ShareAccountLogic extends GetxController implements RequestInterface {
   TextEditingController addUpcomingdes = TextEditingController();
   TextEditingController addUpcomingprivacy = TextEditingController(text: "Public");
 
-  ExternalAccountModel? selectedAccoount;
+  ProgramModel? selectedAccoount;
+  ExternalModel? selectedShareAccoount;
   var isloading = true.obs;
   var isBottomSheetloading = false.obs;
-  List<ExternalAccountModel> list = [];
+  List<ProgramModel> list = [];
+  List<ExternalModel> externalList = [];
   late ApiRequster apiRequster;
   @override
   void onReady() {
@@ -77,14 +83,23 @@ class ShareAccountLogic extends GetxController implements RequestInterface {
     super.onReady();
     apiRequster = ApiRequster(this,develperModel: true);
     getExternalAccount();
+    getExterNal();
     getShareSchedules();
   }
 
   getExternalAccount(){
-    apiRequster.request("external-accounts", ApiRequster.MHETOD_GET, 1,useToken: true);
+    apiRequster.request("programs", ApiRequster.MHETOD_GET, 1,useToken: true);
   }
 
 
+  getExterNal(){
+    apiRequster.request("external-accounts", ApiRequster.MHETOD_GET, 4,useToken: true);
+
+  }
+  getShareCustomAccounts(){
+    apiRequster.request("destinations", ApiRequster.MHETOD_GET, 4,useToken: true);
+
+  }
   getShareSchedules(){
     print('ShareAccountLogic.getShareSchedules = ${viewMonth}');
     apiRequster.request("share-schedules?from=${formatDateTime(DateTime(viewMonth.year,viewMonth.month,))}&to=${formatDateTime(DateTime(viewMonth.year,viewMonth.month+1,))}&", ApiRequster.MHETOD_GET, 3,useToken: true);
@@ -119,6 +134,9 @@ class ShareAccountLogic extends GetxController implements RequestInterface {
       case 3:
         parseJsonFromSchludes(source);
         break;
+      case 4:
+        parseJsonFromExternalAccount(source);
+        break;
     }
   }
   final GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -146,7 +164,10 @@ class ShareAccountLogic extends GetxController implements RequestInterface {
       print('Error signing in: $error');
     }
   }
-  void deleteModel(ExternalAccountModel elementAt) {
+  void deleteModel(ProgramModel elementAt) {
+    apiRequster.request("external-accounts/${elementAt.id}", ApiRequster.MHETOD_DELETE, 1,useToken: true);
+  }
+  void deleteShareModel(ExternalModel elementAt) {
     apiRequster.request("external-accounts/${elementAt.id}", ApiRequster.MHETOD_DELETE, 1,useToken: true);
   }
 
@@ -223,6 +244,9 @@ class ShareAccountLogic extends GetxController implements RequestInterface {
 
   }
 
+  void showAddProgramBottomSheet() {
+    Get.bottomSheet(ProgramBottomSheet(this));
+  }
   void showAccountType() {
     Get.bottomSheet(Container(
       width: 100.w,
@@ -275,30 +299,7 @@ class ShareAccountLogic extends GetxController implements RequestInterface {
             ),
           ),
           SizedBox(height: 1.5.h,),
-          Container(
-            width: 100.w,
-            height: 6.h,
-            decoration: BoxDecoration(
-                color: "2f2f3b".toColor(),
-                borderRadius: BorderRadius.circular(10)
-            ),
-            child: MaterialButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)
 
-              ),
-              padding: EdgeInsets.zero,
-              onPressed: (){
-                Get.back();
-                showRTSPform();
-              },
-              child: Center(
-                child: Text("share_18".tr,style: TextStyle(
-                    color: Colors.white,fontWeight: FontWeight.bold
-                ),),
-              ),
-            ),
-          ),
         ],
       ),
     ));
@@ -390,7 +391,8 @@ class ShareAccountLogic extends GetxController implements RequestInterface {
   }
 
   void parseJsonFromMainList(source) {
-    list = FromJsonGetExternalAccount.fromJson(jsonDecode(source)).data??[];
+    log('ShareAccountLogic.parseJsonFromMainList = ${source}');
+    list = FromJsonGetPrograms.fromJson(jsonDecode(source)).data??[];
     isloading(false);
   }
 
@@ -412,8 +414,12 @@ class ShareAccountLogic extends GetxController implements RequestInterface {
 
   }
 
-  void setSelectedChannel(ExternalAccountModel elementAt) {
+  void setSelectedChannel(ProgramModel elementAt) {
     selectedAccoount=elementAt;
+    update();
+  }
+  void setSelectedShareChannel(ExternalModel elementAt) {
+    selectedShareAccoount=elementAt;
     update();
   }
 
@@ -536,5 +542,22 @@ class ShareAccountLogic extends GetxController implements RequestInterface {
   String formatDateTime(DateTime dateTime) {
     final DateFormat formatter = DateFormat('y-MM-dd HH:mm:ss'); // Use 'y' for year, 'MM' for zero-padded month, 'dd' for zero-padded day
     return formatter.format(dateTime);
+  }
+
+  void sendRequestAddProgram() {
+   var body = {
+     "source": "publishers",
+     "name":"adwdaaswd",
+     "details": {
+
+     }
+   };
+   apiRequster.request("programs", ApiRequster.MHETOD_POST, 500,body: body);
+  }
+
+  void parseJsonFromExternalAccount(source) {
+    log('ShareAccountLogic.parseJsonFromExternalAccount = ${source}');
+    externalList = fromJsonGetExternalAccountFromJson(source).data??[];
+    update();
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:mediaverse/app/pages/wallet/widget/billing/not_connected.dart';
 import 'package:mediaverse/app/pages/wallet/widget/income/income_widget.dart';
+import 'package:mediaverse/app/pages/wallet/widget/invoice/invoice_widget.dart';
 import 'package:mediaverse/app/pages/wallet/widget/package/package_widget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mediaverse/app/common/app_color.dart';
@@ -61,44 +62,36 @@ class _WalletScreenState extends State<WalletScreen>   with SingleTickerProvider
         length: 2,
         child: Column(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(60.sp),
-                bottomLeft: Radius.circular(60.sp),
+            Container(
+              width: 100.w,
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(60.sp),
+                  bottomLeft: Radius.circular(60.sp),
+                ),
               ),
-              child: Container(
-                width: 100.w,
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.4),
-                  borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(60.sp),
-                    bottomLeft: Radius.circular(60.sp),
-                  ),
-
-                ),
-                height: 60,
-                child: TabBar(
-                  tabAlignment: TabAlignment.center,
-                  physics: const BouncingScrollPhysics(),
-                  isScrollable: true,
-                  controller: _tabController,
-                  labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  overlayColor: MaterialStateProperty.all(Colors.transparent),
-                  enableFeedback: false,
-                  indicatorWeight: 2,
-
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicatorColor: AppColor.primaryLightColor,
-                  unselectedLabelColor: Colors.grey,
-                  labelColor: AppColor.primaryLightColor,
-                  dividerColor: Colors.transparent,
-                  tabs: [
-                    _buildTab(context, 0, 'channel_36'.tr),
-                    _buildTab(context, 1, 'channel_37'.tr),
-                    _buildTab(context, 2, 'channel_38'.tr),
-                    _buildTab(context, 3, 'channel_39'.tr),
-                  ],
-                ),
+              height: 60,
+              child: TabBar(
+                tabAlignment: TabAlignment.center,
+                physics: const BouncingScrollPhysics(),
+                isScrollable: true,
+                controller: _tabController,
+                labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
+                overlayColor: MaterialStateProperty.all(Colors.transparent),
+                enableFeedback: false,
+                indicatorWeight: 2,
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicatorColor: AppColor.primaryLightColor,
+                unselectedLabelColor: Colors.grey,
+                labelColor: AppColor.primaryLightColor,
+                dividerColor: Colors.transparent,
+                tabs: [
+                  _buildTab(context, 0, 'channel_36'.tr),
+                  _buildTab(context, 1, 'channel_37'.tr),
+                  _buildTab(context, 2, 'channel_38'.tr),
+                  _buildTab(context, 3, 'channel_39'.tr),
+                ],
               ),
             ),
             Expanded(
@@ -107,9 +100,9 @@ class _WalletScreenState extends State<WalletScreen>   with SingleTickerProvider
                 controller: _tabController,
                 children: [
                   BillingWidget(logic),
+                  InvoiceWidget(logic),
                   IncomeWidget(logic),
-                  IncomeWidget(logic),
-                  PackageWidget(logic),
+                  PackageWidget(logic),//
                 ],
               ),
             ),
@@ -131,4 +124,3 @@ class _WalletScreenState extends State<WalletScreen>   with SingleTickerProvider
 
 
 }
-

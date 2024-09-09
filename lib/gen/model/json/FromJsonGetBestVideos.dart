@@ -1,7 +1,6 @@
-
+import 'package:mediaverse/gen/model/json/FromJsonGetmostText.dart';
 
 import 'FromJsonGetBestModelVideows.dart';
-import 'FromJsonGetmostText.dart';
 
 class FromJsonGetBestVideos {
   FromJsonGetBestVideos({

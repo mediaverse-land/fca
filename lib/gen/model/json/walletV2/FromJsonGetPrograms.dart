@@ -1,6 +1,9 @@
-class FromJsonGetExternalAccount {
-  FromJsonGetExternalAccount({
-      List<ExternalAccountModel>? data, 
+import 'dart:convert';
+FromJsonGetPrograms fromJsonGetProgramsFromJson(String str) => FromJsonGetPrograms.fromJson(json.decode(str));
+String fromJsonGetProgramsToJson(FromJsonGetPrograms data) => json.encode(data.toJson());
+class FromJsonGetPrograms {
+  FromJsonGetPrograms({
+      List<ProgramModel>? data,
       Links? links, 
       Meta? meta,}){
     _data = data;
@@ -8,27 +11,21 @@ class FromJsonGetExternalAccount {
     _meta = meta;
 }
 
-  FromJsonGetExternalAccount.fromJson(dynamic json) {
+  FromJsonGetPrograms.fromJson(dynamic json) {
     if (json['data'] != null) {
       _data = [];
       json['data'].forEach((v) {
-        _data?.add(ExternalAccountModel.fromJson(v));
+        _data?.add(ProgramModel.fromJson(v));
       });
     }
     _links = json['links'] != null ? Links.fromJson(json['links']) : null;
     _meta = json['meta'] != null ? Meta.fromJson(json['meta']) : null;
   }
-  List<ExternalAccountModel>? _data;
+  List<ProgramModel>? _data;
   Links? _links;
   Meta? _meta;
-FromJsonGetExternalAccount copyWith({  List<ExternalAccountModel>? data,
-  Links? links,
-  Meta? meta,
-}) => FromJsonGetExternalAccount(  data: data ?? _data,
-  links: links ?? _links,
-  meta: meta ?? _meta,
-);
-  List<ExternalAccountModel>? get data => _data;
+
+  List<ProgramModel>? get data => _data;
   Links? get links => _links;
   Meta? get meta => _meta;
 
@@ -48,6 +45,8 @@ FromJsonGetExternalAccount copyWith({  List<ExternalAccountModel>? data,
 
 }
 
+Meta metaFromJson(String str) => Meta.fromJson(json.decode(str));
+String metaToJson(Meta data) => json.encode(data.toJson());
 class Meta {
   Meta({
       num? currentPage, 
@@ -91,23 +90,7 @@ class Meta {
   num? _perPage;
   num? _to;
   num? _total;
-Meta copyWith({  num? currentPage,
-  num? from,
-  num? lastPage,
-  List<Links>? links,
-  String? path,
-  num? perPage,
-  num? to,
-  num? total,
-}) => Meta(  currentPage: currentPage ?? _currentPage,
-  from: from ?? _from,
-  lastPage: lastPage ?? _lastPage,
-  links: links ?? _links,
-  path: path ?? _path,
-  perPage: perPage ?? _perPage,
-  to: to ?? _to,
-  total: total ?? _total,
-);
+
   num? get currentPage => _currentPage;
   num? get from => _from;
   num? get lastPage => _lastPage;
@@ -134,6 +117,8 @@ Meta copyWith({  num? currentPage,
 
 }
 
+Links linksFromJson(String str) => Links.fromJson(json.decode(str));
+String linksToJson(Links data) => json.encode(data.toJson());
 class Links {
   Links({
       dynamic url, 
@@ -152,13 +137,7 @@ class Links {
   dynamic _url;
   String? _label;
   bool? _active;
-Links copyWith({  dynamic url,
-  String? label,
-  bool? active,
-}) => Links(  url: url ?? _url,
-  label: label ?? _label,
-  active: active ?? _active,
-);
+
   dynamic get url => _url;
   String? get label => _label;
   bool? get active => _active;
@@ -174,113 +153,106 @@ Links copyWith({  dynamic url,
 }
 
 
-class ExternalAccountModel {
-  ExternalAccountModel({
-      String? id,
-    String? userId,
-    String? type,
-      String? title, 
-      Information? information, 
+
+ProgramModel dataFromJson(String str) => ProgramModel.fromJson(json.decode(str));
+String dataToJson(ProgramModel data) => json.encode(data.toJson());
+class ProgramModel {
+  ProgramModel({
+      String? id, 
+      String? name, 
+      String? userId, 
+      String? source, 
+      List<dynamic>? details, 
+      dynamic lastEvent, 
       String? createdAt, 
       String? updatedAt, 
-      dynamic deletedAt,}){
+      dynamic deletedAt, 
+      List<dynamic>? events, 
+      List<dynamic>? destinations,}){
     _id = id;
+    _name = name;
     _userId = userId;
-    _type = type;
-    _title = title;
-    _information = information;
+    _source = source;
+    _details = details;
+    _lastEvent = lastEvent;
     _createdAt = createdAt;
     _updatedAt = updatedAt;
     _deletedAt = deletedAt;
+    _events = events;
+    _destinations = destinations;
 }
 
-  ExternalAccountModel.fromJson(dynamic json) {
+  ProgramModel.fromJson(dynamic json) {
     _id = json['id'];
+    _name = json['name'];
     _userId = json['user_id'];
-    _type = json['media_type'];
-    _title = json['title'].toString();
-    _information = json['information'] != null ? Information.fromJson(json['information']) : null;
+    _source = json['source'];
+    if (json['details'] != null) {
+      _details = [];
+      json['details'].forEach((v) {
+        _details?.add(v);
+      });
+    }
+    _lastEvent = json['last_event'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
     _deletedAt = json['deleted_at'];
+    if (json['events'] != null) {
+      _events = [];
+      json['events'].forEach((v) {
+        _events?.add(v);
+      });
+    }
+    if (json['destinations'] != null) {
+      _destinations = [];
+      json['destinations'].forEach((v) {
+        _destinations?.add(v);
+      });
+    }
   }
   String? _id;
+  String? _name;
   String? _userId;
-  String? _type;
-  String? _title;//
-  Information? _information;
+  String? _source;
+  List<dynamic>? _details;
+  dynamic _lastEvent;
   String? _createdAt;
   String? _updatedAt;
   dynamic _deletedAt;
-ExternalAccountModel copyWith({  String? id,
-  String? userId,
-  String? type,
-  String? title,
-  Information? information,
-  String? createdAt,
-  String? updatedAt,
-  dynamic deletedAt,
-}) => ExternalAccountModel(  id: id ?? _id,
-  userId: userId ?? _userId,
-  type: type ?? _type,
-  title: title ?? _title,
-  information: information ?? _information,
-  createdAt: createdAt ?? _createdAt,
-  updatedAt: updatedAt ?? _updatedAt,
-  deletedAt: deletedAt ?? _deletedAt,
-);
+  List<dynamic>? _events;
+  List<dynamic>? _destinations;
+
   String? get id => _id;
+  String? get name => _name;
   String? get userId => _userId;
-  String? get type => _type;
-  String? get title => _title;
-  Information? get information => _information;
+  String? get source => _source;
+  List<dynamic>? get details => _details;
+  dynamic get lastEvent => _lastEvent;
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
   dynamic get deletedAt => _deletedAt;
+  List<dynamic>? get events => _events;
+  List<dynamic>? get destinations => _destinations;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
+    map['name'] = _name;
     map['user_id'] = _userId;
-    map['media_type'] = _type;
-    map['title'] = _title;
-    if (_information != null) {
-      map['information'] = _information?.toJson();
+    map['source'] = _source;
+    if (_details != null) {
+      map['details'] = _details?.map((v) => v.toJson()).toList();
     }
+    map['last_event'] = _lastEvent;
     map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
     map['deleted_at'] = _deletedAt;
-    return map;
-  }
-
-}
-
-class Information {
-  Information({
-      String? accessToken, 
-      String? refreshToken,}){
-    _accessToken = accessToken;
-    _refreshToken = refreshToken;
-}
-
-  Information.fromJson(dynamic json) {
-    _accessToken = json['access_token'];
-    _refreshToken = json['refresh_token'];
-  }
-  String? _accessToken;
-  String? _refreshToken;
-Information copyWith({  String? accessToken,
-  String? refreshToken,
-}) => Information(  accessToken: accessToken ?? _accessToken,
-  refreshToken: refreshToken ?? _refreshToken,
-);
-  String? get accessToken => _accessToken;
-  String? get refreshToken => _refreshToken;
-
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['access_token'] = _accessToken;
-    map['refresh_token'] = _refreshToken;
+    if (_events != null) {
+      map['events'] = _events?.map((v) => v.toJson()).toList();
+    }
+    if (_destinations != null) {
+      map['destinations'] = _destinations?.map((v) => v.toJson()).toList();
+    }
     return map;
   }
 

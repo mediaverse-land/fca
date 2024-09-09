@@ -10,6 +10,7 @@ import 'package:mediaverse/app/pages/media_suit/view.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../common/app_color.dart';
+import '../stream/view.dart';
 
 class AllToolsScreen extends StatefulWidget {
   const AllToolsScreen({super.key});
@@ -33,7 +34,7 @@ class _AllToolsScreenState extends State<AllToolsScreen> {
 
 
               SizedBox(height: 5.h,),
-              AllToolsButtonWidget(onPressed: (){
+              AllToolsButtonWidget(onPressed: (){//
 
                 Get.to(ChannelScreen());
                   }, icon: "assets/icons/all_tools_1.svg", name: "channel_30".tr),
@@ -42,7 +43,8 @@ class _AllToolsScreenState extends State<AllToolsScreen> {
               //
               // }, icon: "assets/icons/all_tools_2.svg", name: "Control Room"),
               AllToolsButtonWidget(onPressed: (){
-                Get.toNamed(PageRoutes.MEDIASUIT);
+               // Get.toNamed(PageRoutes.MEDIASUIT);
+                Get.to(()=>CameraExampleHome());
 
               }, icon: "assets/icons/all_tools_3.svg", name: "channel_31".tr),
               // AllToolsButtonWidget(onPressed: (){},

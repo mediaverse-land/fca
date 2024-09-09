@@ -243,13 +243,20 @@ class IncomeWidget extends StatelessWidget {
                             ),
                           ),
                         ),
-                      ],),visible:! logic.isBillingStripeConnected,),
+                      ],),visible: logic.isIncomeStripeConnected,),
                       Visibility(child: Column(children: [
+
+                        Text("Your Are Not Connected To Stripe",style: TextStyle(fontWeight: FontWeight.w400,fontSize: 14.sp),),
                         Container(
-                          margin: EdgeInsets.only(top: 20.h),
+                            width: 60.w,
+                            height: 25.h,
+                            child: Lottie.asset("assets/json/empty.json")
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 8.h),
                           child: InkWell(
                             onTap: (){
-                              logic.getStripeConnect();
+                              logic.getPayoutConnect();
                             },
                             child: Container(
 

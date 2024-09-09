@@ -1,6 +1,9 @@
+import 'dart:convert';
+FromJsonGetExternalAccount fromJsonGetExternalAccountFromJson(String str) => FromJsonGetExternalAccount.fromJson(json.decode(str));
+String fromJsonGetExternalAccountToJson(FromJsonGetExternalAccount data) => json.encode(data.toJson());
 class FromJsonGetExternalAccount {
   FromJsonGetExternalAccount({
-      List<ExternalAccountModel>? data, 
+      List<ExternalModel>? data,
       Links? links, 
       Meta? meta,}){
     _data = data;
@@ -12,23 +15,17 @@ class FromJsonGetExternalAccount {
     if (json['data'] != null) {
       _data = [];
       json['data'].forEach((v) {
-        _data?.add(ExternalAccountModel.fromJson(v));
+        _data?.add(ExternalModel.fromJson(v));
       });
     }
     _links = json['links'] != null ? Links.fromJson(json['links']) : null;
     _meta = json['meta'] != null ? Meta.fromJson(json['meta']) : null;
   }
-  List<ExternalAccountModel>? _data;
+  List<ExternalModel>? _data;
   Links? _links;
   Meta? _meta;
-FromJsonGetExternalAccount copyWith({  List<ExternalAccountModel>? data,
-  Links? links,
-  Meta? meta,
-}) => FromJsonGetExternalAccount(  data: data ?? _data,
-  links: links ?? _links,
-  meta: meta ?? _meta,
-);
-  List<ExternalAccountModel>? get data => _data;
+
+  List<ExternalModel>? get data => _data;
   Links? get links => _links;
   Meta? get meta => _meta;
 
@@ -48,6 +45,8 @@ FromJsonGetExternalAccount copyWith({  List<ExternalAccountModel>? data,
 
 }
 
+Meta metaFromJson(String str) => Meta.fromJson(json.decode(str));
+String metaToJson(Meta data) => json.encode(data.toJson());
 class Meta {
   Meta({
       num? currentPage, 
@@ -91,23 +90,7 @@ class Meta {
   num? _perPage;
   num? _to;
   num? _total;
-Meta copyWith({  num? currentPage,
-  num? from,
-  num? lastPage,
-  List<Links>? links,
-  String? path,
-  num? perPage,
-  num? to,
-  num? total,
-}) => Meta(  currentPage: currentPage ?? _currentPage,
-  from: from ?? _from,
-  lastPage: lastPage ?? _lastPage,
-  links: links ?? _links,
-  path: path ?? _path,
-  perPage: perPage ?? _perPage,
-  to: to ?? _to,
-  total: total ?? _total,
-);
+
   num? get currentPage => _currentPage;
   num? get from => _from;
   num? get lastPage => _lastPage;
@@ -134,6 +117,8 @@ Meta copyWith({  num? currentPage,
 
 }
 
+Links linksFromJson(String str) => Links.fromJson(json.decode(str));
+String linksToJson(Links data) => json.encode(data.toJson());
 class Links {
   Links({
       dynamic url, 
@@ -152,13 +137,7 @@ class Links {
   dynamic _url;
   String? _label;
   bool? _active;
-Links copyWith({  dynamic url,
-  String? label,
-  bool? active,
-}) => Links(  url: url ?? _url,
-  label: label ?? _label,
-  active: active ?? _active,
-);
+
   dynamic get url => _url;
   String? get label => _label;
   bool? get active => _active;
@@ -174,11 +153,14 @@ Links copyWith({  dynamic url,
 }
 
 
-class ExternalAccountModel {
-  ExternalAccountModel({
-      String? id,
-    String? userId,
-    String? type,
+
+ExternalModel dataFromJson(String str) => ExternalModel.fromJson(json.decode(str));
+String dataToJson(ExternalModel data) => json.encode(data.toJson());
+class ExternalModel {
+  ExternalModel({
+      String? id, 
+      String? userId, 
+      num? type, 
       String? title, 
       Information? information, 
       String? createdAt, 
@@ -194,11 +176,11 @@ class ExternalAccountModel {
     _deletedAt = deletedAt;
 }
 
-  ExternalAccountModel.fromJson(dynamic json) {
+  ExternalModel.fromJson(dynamic json) {
     _id = json['id'];
     _userId = json['user_id'];
-    _type = json['media_type'];
-    _title = json['title'].toString();
+    _type = json['type'];
+    _title = json['title'];
     _information = json['information'] != null ? Information.fromJson(json['information']) : null;
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
@@ -206,32 +188,16 @@ class ExternalAccountModel {
   }
   String? _id;
   String? _userId;
-  String? _type;
-  String? _title;//
+  num? _type;
+  String? _title;
   Information? _information;
   String? _createdAt;
   String? _updatedAt;
   dynamic _deletedAt;
-ExternalAccountModel copyWith({  String? id,
-  String? userId,
-  String? type,
-  String? title,
-  Information? information,
-  String? createdAt,
-  String? updatedAt,
-  dynamic deletedAt,
-}) => ExternalAccountModel(  id: id ?? _id,
-  userId: userId ?? _userId,
-  type: type ?? _type,
-  title: title ?? _title,
-  information: information ?? _information,
-  createdAt: createdAt ?? _createdAt,
-  updatedAt: updatedAt ?? _updatedAt,
-  deletedAt: deletedAt ?? _deletedAt,
-);
+
   String? get id => _id;
   String? get userId => _userId;
-  String? get type => _type;
+  num? get type => _type;
   String? get title => _title;
   Information? get information => _information;
   String? get createdAt => _createdAt;
@@ -242,7 +208,7 @@ ExternalAccountModel copyWith({  String? id,
     final map = <String, dynamic>{};
     map['id'] = _id;
     map['user_id'] = _userId;
-    map['media_type'] = _type;
+    map['type'] = _type;
     map['title'] = _title;
     if (_information != null) {
       map['information'] = _information?.toJson();
@@ -255,32 +221,24 @@ ExternalAccountModel copyWith({  String? id,
 
 }
 
+Information informationFromJson(String str) => Information.fromJson(json.decode(str));
+String informationToJson(Information data) => json.encode(data.toJson());
 class Information {
   Information({
-      String? accessToken, 
-      String? refreshToken,}){
+      String? accessToken,}){
     _accessToken = accessToken;
-    _refreshToken = refreshToken;
 }
 
   Information.fromJson(dynamic json) {
     _accessToken = json['access_token'];
-    _refreshToken = json['refresh_token'];
   }
   String? _accessToken;
-  String? _refreshToken;
-Information copyWith({  String? accessToken,
-  String? refreshToken,
-}) => Information(  accessToken: accessToken ?? _accessToken,
-  refreshToken: refreshToken ?? _refreshToken,
-);
+
   String? get accessToken => _accessToken;
-  String? get refreshToken => _refreshToken;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['access_token'] = _accessToken;
-    map['refresh_token'] = _refreshToken;
     return map;
   }
 

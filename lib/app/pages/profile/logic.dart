@@ -20,7 +20,10 @@ import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../../gen/model/json/FromJsonGetImages.dart';
+import '../../../gen/model/json/FromJsonGetInvoices.dart';
 import '../../../gen/model/json/FromJsonGetWallet.dart';
+import '../../../gen/model/json/walletV2/FromJsonGetBills.dart';
+import '../../../gen/model/json/walletV2/FromJsonGetPlans.dart';
 import '../../common/app_color.dart';
 import 'package:dio/dio.dart' as d;
 
@@ -48,6 +51,10 @@ class ProfileControllers extends GetxController implements RequestInterface {
   List<dynamic> subVideos = [];
   List<dynamic> subAudios = [];
   List<dynamic> subText = [];
+  List<BillsModel> billsModel = [];
+  List<InvoiceModel> invoiceModel = [];
+  List<PlansModel> plansModel = [];
+
 
   bool emptySubAll = false;
   bool emptySubImages = false;
@@ -55,8 +62,8 @@ class ProfileControllers extends GetxController implements RequestInterface {
   bool emptySubAudios = false;
   bool emptySubText = false;
 
-  var isBillingStripeConnected = true;
-  var isIncomeStripeConnected = true;
+  var isBillingStripeConnected = false;
+  var isIncomeStripeConnected = false;
 
 
   FromJsonGetAllAsstes myAssets = FromJsonGetAllAsstes();
@@ -90,6 +97,9 @@ class ProfileControllers extends GetxController implements RequestInterface {
     //getWalletBalance();
     getStripe();
     getPayout();
+    getInvoice();
+    getPlans();
+    getSubscribedPlans();
     getAllCountries();
   }
 
@@ -242,6 +252,12 @@ class ProfileControllers extends GetxController implements RequestInterface {
         break;
         case 22:
         pareJsonFromInoiceByLink(source);
+        break;
+        case 23:
+        pareJsonFromPlans(source);
+        break;
+        case 24:
+        pareJsonFromSubscribedPlans(source);
         break;
     }
   }
@@ -448,6 +464,7 @@ class ProfileControllers extends GetxController implements RequestInterface {
     // isloading(true);
     apiRequster.request("stripe/payout/link", ApiRequster.MHETOD_GET, 19,useToken: true);
   }
+
   getBiilss(){
     // isloading(true);
     apiRequster.request("bills", ApiRequster.MHETOD_GET, 20,useToken: true);
@@ -459,6 +476,15 @@ class ProfileControllers extends GetxController implements RequestInterface {
   getInvoiceBylink(id){
     // isloading(true);
     apiRequster.request("invoices/${id}/link", ApiRequster.MHETOD_GET, 22,useToken: true);
+  }
+
+  getPlans(){
+    // isloading(true);
+    apiRequster.request("plans", ApiRequster.MHETOD_GET, 23,useToken: true);
+  }
+  getSubscribedPlans(){
+    // isloading(true);
+    apiRequster.request("subscribed-plans", ApiRequster.MHETOD_GET, 24,useToken: true);
   }
 
 
@@ -485,7 +511,8 @@ class ProfileControllers extends GetxController implements RequestInterface {
 
   }
   void pareJsonFromPayout(source) {
-    print('ProfileControllers.pareJsonFromStripe = ${source}');
+    print('ProfileControllers.pareJsonFromPayout = ${source}');
+
     isIncomeStripeConnected = jsonDecode(source)['enabled'];
 
     update();
@@ -623,11 +650,17 @@ class ProfileControllers extends GetxController implements RequestInterface {
   }
 
   void pareJsonFromBills(source) {
-
+    billsModel.addAll(fromJsonGetBillsFromJson(source.toString()).data??[]);
+    billsModel.addAll(fromJsonGetBillsFromJson(source.toString()).data??[]);
+    billsModel.addAll(fromJsonGetBillsFromJson(source.toString()).data??[]);
+    billsModel.addAll(fromJsonGetBillsFromJson(source.toString()).data??[]);
+    update();
   }
 
   void pareJsonFromInoice(source) {
-
+    log('ProfileControllers.pareJsonFromInoice = ${source}');
+    invoiceModel = fromJsonGetInvoicesFromJson(source).data??[];
+    update();
   }
 
   void pareJsonFromInoiceByLink(source) async{
@@ -639,6 +672,15 @@ class ProfileControllers extends GetxController implements RequestInterface {
     }  catch (e) {
       // TODO
     }
+  }
+
+  void pareJsonFromPlans(source) {
+    plansModel = fromJsonGetPlansFromJson(source.toString()).data??[];
+    update();
+  }
+
+  void pareJsonFromSubscribedPlans(source) {
+    print('ProfileControllers.pareJsonFromSubscribedPlans = ${source}');
   }
 
 }

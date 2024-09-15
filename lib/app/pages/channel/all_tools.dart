@@ -44,7 +44,7 @@ class _AllToolsScreenState extends State<AllToolsScreen> {
               // }, icon: "assets/icons/all_tools_2.svg", name: "Control Room"),
               AllToolsButtonWidget(onPressed: (){
                // Get.toNamed(PageRoutes.MEDIASUIT);
-                Get.to(()=>CameraExampleHome());
+                Get.toNamed(PageRoutes.MEDIASUIT);
 
               }, icon: "assets/icons/all_tools_3.svg", name: "channel_31".tr),
               // AllToolsButtonWidget(onPressed: (){},

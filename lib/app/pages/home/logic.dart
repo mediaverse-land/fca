@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -105,11 +106,17 @@ class HomeLogic extends GetxController implements  RequestInterface{
 
   void praseJsonFromChannels(source) {
     try {
-      channels = FromJsonGetChannels
-          .fromJson(jsonDecode(source))
-          .data ?? [];
+      if (Platform.isIOS) {
+        channels = (FromJsonGetChannels.fromJson(jsonDecode(source)).data ?? []).where((te)=>te.link.toString().contains("https://s1.mediaverse.app")).toList();
+      }else{
+        channels = FromJsonGetChannels.fromJson(jsonDecode(source)).data ?? [];
+
+      }
+      print('HomeLogic.praseJsonFromChannels 1 =${channels}');
     }  catch (e) {
       // TODO
+      print('HomeLogic.praseJsonFromChannels 2');
+
     }
 
     _getBestVideos();
@@ -126,12 +133,11 @@ class HomeLogic extends GetxController implements  RequestInterface{
 
 
 
-    _getMostImages();
+    _getMostVideos();
   }
 
-  void _getMostImages() {
+  void _getMostVideos() {
     apiRequster.request("images/most-viewed", ApiRequster.MHETOD_GET, 3);
-
 
   }
   void _getMostText() {

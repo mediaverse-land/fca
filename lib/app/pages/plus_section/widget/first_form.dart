@@ -11,6 +11,7 @@ import 'package:mediaverse/app/pages/plus_section/widget/secned_form.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../common/app_color.dart';
+import '../../signup/widgets/custom_text_field_form_register_widget.dart';
 import 'custom_plan_text_filed.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -25,6 +26,7 @@ import 'package:mediaverse/app/pages/plus_section/widget/secned_form.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../common/app_color.dart';
+import '../../signup/widgets/custom_text_field_form_register_widget.dart';
 import 'custom_plan_text_filed.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -39,6 +41,7 @@ import 'package:mediaverse/app/pages/plus_section/widget/secned_form.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../common/app_color.dart';
+import '../../signup/widgets/custom_text_field_form_register_widget.dart';
 import 'custom_plan_text_filed.dart';
 
 class FirstForm extends StatefulWidget {
@@ -56,7 +59,17 @@ class _FirstFormState extends State<FirstForm> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: ()async=>false,
+      onWillPop: ()async{
+        return true;
+        try {
+          if(Get.arguments[1]==true){
+
+          }
+        }  catch (e) {
+          // TODO
+        }
+        return false;
+      },
       child: Scaffold(
         backgroundColor: AppColor.blueDarkColor,
 
@@ -211,6 +224,47 @@ class _FirstFormState extends State<FirstForm> {
                                 ),
                                 SizedBox(height: 1.h,),
                                 Text("plus_13".tr,style: TextStyle(
+                                    color: Colors.white,fontWeight: FontWeight.bold
+                                ),)
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 2.h,),
+
+                        Align(
+                          child: Visibility(
+                            visible: true,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Visibility(
+
+                                  child: Container(
+                                    width: 10.w,
+                                    height: 10.w,
+                                    child: MaterialButton(
+                                      onPressed: (){
+                                       Get.back();
+                                      },
+                                      padding: EdgeInsets.zero,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(100)
+                                      ),
+                                      child: Stack(
+                                        children: [
+                                          SizedBox.expand(child: Image.asset("assets/images/save_bg.png")),
+                                          Align(
+                                            child: Icon(Icons.cancel_outlined,color: Colors.white,),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  visible: widget.logic.getVisibilaty(),
+                                ),
+                                SizedBox(height: 1.h,),
+                                Text("Cancel".tr,style: TextStyle(
                                     color: Colors.white,fontWeight: FontWeight.bold
                                 ),)
                               ],

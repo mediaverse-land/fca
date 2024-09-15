@@ -123,7 +123,8 @@ class _CommentScreenState extends State<CommentScreen> {
               SliverList.builder(
                   itemCount: commentController.commentsData!['data'].length,
                   itemBuilder: (context , index){
-                final comment =
+                    print('_CommentScreenState.build = ${commentController.commentsData!}');
+                    final comment =
                 commentController.commentsData!['data'][index];
                 final bodyText = comment['body'].toString();
                 return Padding(
@@ -145,8 +146,14 @@ class _CommentScreenState extends State<CommentScreen> {
                       children: [
                         Row(
                           children: [
-                            CircleAvatar(
-                              radius:3.w,
+                            Container(
+
+                              child: CircleAvatar(
+                                backgroundColor: AppColor.blueDarkColor,
+                                backgroundImage:
+                                NetworkImage(comment?['user']['image_url']),
+                              ),
+                              width: 7.w,
                             ),
                             SizedBox(
                               width: 2.w,

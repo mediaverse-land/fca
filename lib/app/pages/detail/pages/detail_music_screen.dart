@@ -211,9 +211,15 @@ class DetailMusicScreen extends StatelessWidget {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              CircleAvatar(
-                                                radius: 3.w,
-                                              ),
+                                          Container(
+
+                                          child: CircleAvatar(
+                                          backgroundColor: AppColor.blueDarkColor,
+                                            backgroundImage:
+                                            NetworkImage(controller.musicDetails!['user']['image_url']),
+                                          ),
+                                          width: 5.w,
+                                        ),
                                               SizedBox(
                                                 width: 2.w,
                                               ),
@@ -328,8 +334,10 @@ class DetailMusicScreen extends StatelessWidget {
                                     ),
                                     GestureDetector(
                                       onTap: (){
-                                        Get.find<MediaSuitController>().setDataEditAudio(controller.musicDetails?['media']['name'] ?? '' , controller.musicDetails?['media']['name'] , controller.musicDetails!['file_id'].toString());
+                                       var audioLength = controller.musicDetails?['file']['time'] ?? 5.0;
+                                        Get.find<MediaSuitController>().setDataEditAudio(controller.musicDetails?['media']['name']?? '' , controller.musicDetails?['file']['url'] , controller.musicDetails!['file_id'].toString() ,time: double.parse(audioLength));
                                         Get.toNamed(PageRoutes.MEDIASUIT);
+                                        // print(audioLength);
                                       },
                                       child:  Icon(Icons.edit),
                                     )
@@ -500,7 +508,7 @@ class DetailMusicScreen extends StatelessWidget {
                       ),
                     );
                   }),
-                  BackWidget()
+                  BackWidget(idAssetMedia: Get.arguments['idAssetMedia'] == "idAssetMedia",)
 
                 ],
               );

@@ -187,16 +187,18 @@ class ProgramModel {
     _name = json['name'];
     _userId = json['user_id'];
     _source = json['source'];
-    if (json['details'] != null) {
-      _details = [];
-      json['details'].forEach((v) {
-        _details?.add(v);
-      });
-    }
+    // if (json['details'] != null) {
+    //   _details = [];
+    //   json['details'].forEach((v) {
+    //     _details?.add(v);
+    //   });
+    // }
     _lastEvent = json['last_event'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
     _deletedAt = json['deleted_at'];
+    streamURL = "${json['stream_url']}/${json['stream_key']}";
+    print('ProgramModel.fromJson ${streamURL}');
     if (json['events'] != null) {
       _events = [];
       json['events'].forEach((v) {
@@ -218,6 +220,7 @@ class ProgramModel {
   dynamic _lastEvent;
   String? _createdAt;
   String? _updatedAt;
+  String streamURL = "";
   dynamic _deletedAt;
   List<dynamic>? _events;
   List<dynamic>? _destinations;

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +121,7 @@ class LoginScreen extends StatelessWidget {
                     SizedBox(
                       height: 3.h,
                     ),
-                    GoogleCustomRegisterButtonWidget(onTap: () {
+                  if(Platform.isAndroid)  GoogleCustomRegisterButtonWidget(onTap: () {
                       //  logic.requestLogin();
                       //signInWithGoogle();
                       _googleLogIn();
@@ -145,7 +147,7 @@ class LoginScreen extends StatelessWidget {
           key: UniqueKey(),
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('login_1'.tr,
+            Text('login_1_2'.tr,
                 style: FontStyleApp.bodyMedium
                     .copyWith(color: AppColor.whiteColor)),
             SizedBox(
@@ -159,7 +161,7 @@ class LoginScreen extends StatelessWidget {
             SizedBox(
               height: 3.h,
             ),
-            CustomTextFieldLogin(
+            PAsswordCustomTextFieldLogin(
                 prefix: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -194,8 +196,8 @@ class LoginScreen extends StatelessWidget {
                       logic.update();
                     },
                     child: Text(
-                      ("login_5".tr) +" / ",
-                      style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
+                      ("login_5".tr) +"    /     ",
+                      style: TextStyle(color: "#83839C".toColor(), fontSize: 10.sp),
                     )),
                 InkWell(
                     onTap: () {
@@ -204,7 +206,7 @@ class LoginScreen extends StatelessWidget {
                     },
                     child: Text(
                       "login_20".tr,
-                      style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
+                      style: TextStyle(color: "#83839C".toColor(), fontSize: 10.sp),
                     )),
               ],
             ),
@@ -254,7 +256,7 @@ class LoginScreen extends StatelessWidget {
             SizedBox(
               height: 3.h,
             ),
-            CustomTextFieldLogin(
+            PAsswordCustomTextFieldLogin(
                 prefix: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -291,8 +293,8 @@ class LoginScreen extends StatelessWidget {
                       logic.update();
                     },
                     child: Text(
-                      ("login_12".tr) + " /  ",
-                      style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
+                      ("login_12".tr) + "    /     ",
+                      style: TextStyle(color: "#83839C".toColor(), fontSize: 10.sp),
                     )),
                 InkWell(
                     onTap: () {
@@ -301,7 +303,7 @@ class LoginScreen extends StatelessWidget {
                     },
                     child: Text(
                       "login_20".tr,
-                      style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
+                      style: TextStyle(color: "#83839C".toColor(), fontSize: 10.sp),
                     )),
               ],
             ),
@@ -320,7 +322,7 @@ class LoginScreen extends StatelessWidget {
           key: UniqueKey(),
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('login_1'.tr,
+            Text('login_1_1'.tr,
                 style: FontStyleApp.bodyMedium
                     .copyWith(color: AppColor.whiteColor)),
             SizedBox(
@@ -344,8 +346,8 @@ class LoginScreen extends StatelessWidget {
                       logic.update();
                     },
                     child: Text(
-                      ("login_5".tr) + " /  ",
-                      style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
+                      ("login_5".tr) + "    /     ",
+                      style: TextStyle(color: "#83839C".toColor(), fontSize: 10.sp),
                     )),
                 InkWell(
                     onTap: () {
@@ -354,7 +356,7 @@ class LoginScreen extends StatelessWidget {
                     },
                     child: Text(
                       "login_12".tr.substring("login_12".tr.indexOf("p")),
-                      style: TextStyle(color: "#83839C".toColor(), fontSize: 8.sp),
+                      style: TextStyle(color: "#83839C".toColor(), fontSize: 10.sp),
                     )),
               ],
             ),

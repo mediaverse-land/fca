@@ -49,25 +49,23 @@ class CustomGridImageWidget extends StatelessWidget {
   }
 
   Widget _buildRightSide(double sizeWidth) {
+    if(mostViews.length<4)return Container();
     return Column(
       children: [
-        if (mostViews.length > 2)
-          _buildImageContainer(mostViews[2], sizeWidth * 2 + 10, isLarge: true),
-        if (mostViews.length > 3 || mostViews.length > 4)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              if (mostViews.length > 3)
-                _buildImageContainer(mostViews[3], sizeWidth),
-              if (mostViews.length > 4)
-                _buildImageContainer(mostViews[4], sizeWidth),
-            ],
-          ),
+        _buildImageContainer(mostViews[2], sizeWidth * 2 + 10, isLarge: true),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildImageContainer(mostViews[3], sizeWidth),
+            _buildImageContainer(mostViews[4], sizeWidth),
+          ],
+        ),
       ],
     );
   }
 
   Widget _buildImageContainer(dynamic data, double size, {bool isLarge = false}) {
+    print('CustomGridImageWidget._buildImageContainer = ${data}');
     return  GestureDetector(
       onTap: (){
         String itemId = data['id'];

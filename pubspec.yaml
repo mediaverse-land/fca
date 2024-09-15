@@ -87,6 +87,8 @@ dependencies:
   country_picker: ^2.0.26
   rtmp_broadcaster: 2.2.6
   wakelock: ^0.4.0
+  auto_size_text: ^3.0.0
+  share_plus: ^10.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

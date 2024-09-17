@@ -25,7 +25,7 @@ class LoginController extends GetxController implements RequestInterface {
 
   late ApiRequster apiRequster;
 
-  Country code = Country( phoneCode: '', countryCode: '+33', e164Sc: 1, geographic:false, level: 1, name: '', example: '', displayName: '', displayNameNoCountryCode: '', e164Key: '');
+  Country code = Country( phoneCode: '', countryCode: '+98', e164Sc: 1, geographic:false, level: 1, name: '', example: '', displayName: '', displayNameNoCountryCode: '', e164Key: '');
   var timeLeft = 30.obs; // Observable variable
   Timer? _timer;
 

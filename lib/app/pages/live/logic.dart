@@ -93,18 +93,19 @@ class LiveController extends GetxController{
   var isLoadingRecord = false.obs;
   var isSuccessRecord = false.obs;
 
-  void postTimeRecord(int channelId) async {
-
+  void postTimeRecord(String channelId) async {
     Get.back();
+
     try {
       isLoadingRecord.value = true;
 
       final token = GetStorage().read("token");
-      String apiUrl = 'https://api.mediaverse.app/v2/tasks/channel-record';
+      String apiUrl = '${Constant.HTTP_HOST}tasks/channel-record';
+
       var response = await Dio().post(
         apiUrl,
         data: {
-          "channel": channelId,
+          "channel": channelId.toString(),
           "length": getTimeRecord(selectedIndex),
         },
         options: Options(
@@ -116,38 +117,35 @@ class LiveController extends GetxController{
           },
         ),
       );
-      print("statusCode: ${response.statusCode}");
-      if (response.statusCode == 200) {
-        print(response.data);
-        isSuccessRecord.value = true;
-        Get.snackbar('Success', "Recording..." ,
-        backgroundColor: Colors.green,
-          icon: Icon(Icons.fiber_smart_record_sharp)
-        );
 
+      print("statusCode: ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        _showSnackbar('Success', "Recording...", Colors.green, Icons.fiber_smart_record_sharp);
+        isSuccessRecord.value = true;
       } else {
-        print("statusCode: ${response.statusCode}");
+        _showSnackbar('Error', "Try again!", Colors.red, Icons.info);
         isSuccessRecord.value = false;
-        Get.snackbar('Error', "Try again!" ,
-            backgroundColor: Colors.red,
-            icon: Icon(Icons.info)
-        );
       }
     } catch (e) {
-      print("$e");
+      print("Error: $e");
       isSuccessRecord.value = false;
-
-      Get.snackbar('Error', "Try again!" ,
-          backgroundColor: Colors.yellow,
-          icon: Icon(Icons.info)
-      );
+      _showSnackbar('Error', "Try again!", Colors.yellow, Icons.info);
     } finally {
-      Future.delayed(Duration(seconds:getTimeRecord(selectedIndex) )).then((value) {
-        isLoadingRecord.value = false;
-      });
-    //  isLoadingRecord.value = false;
+      await Future.delayed(Duration(seconds: getTimeRecord(selectedIndex)));
+      isLoadingRecord.value = false;
     }
   }
+
+  void _showSnackbar(String title, String message, Color backgroundColor, IconData icon) {
+    Get.snackbar(
+      title,
+      message,
+      backgroundColor: backgroundColor,
+      icon: Icon(icon),
+    );
+  }
+
 
 
 

@@ -149,7 +149,10 @@ class _DetailTextScreenState extends State<DetailTextScreen> {
                                           children: [
                                             Container(
 
-                                              child: CircleAvatar(
+                                              child:logic.textDetails?['user']['image_url'] == null?CircleAvatar(
+                                        backgroundColor:
+                                        AppColor.primaryLightColor,
+                                        ): CircleAvatar(
                                                 backgroundColor: AppColor.blueDarkColor,
                                                 backgroundImage:
                                                 NetworkImage(logic.textDetails?['user']['image_url']),

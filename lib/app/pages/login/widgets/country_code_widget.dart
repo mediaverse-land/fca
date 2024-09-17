@@ -35,7 +35,7 @@ Widget CountryCodeWidget(context,LoginController controller){
             //   controller.code  =country;
             //   print('CountryCodeWidget = ${country.dialCode}');
             // },
-            initialSelection: 'DE',
+            initialSelection: 'FR',
             showFlag: true,
             showDropDownButton: true,barrierColor: Colors.black.withOpacity(0.5),
           ),

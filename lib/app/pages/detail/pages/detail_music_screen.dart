@@ -213,7 +213,10 @@ class DetailMusicScreen extends StatelessWidget {
                                             children: [
                                           Container(
 
-                                          child: CircleAvatar(
+                                          child:controller.musicDetails!['user']['image_url'] == null? CircleAvatar(
+                                          backgroundColor:
+                                          AppColor.primaryLightColor,
+                                          ):CircleAvatar(
                                           backgroundColor: AppColor.blueDarkColor,
                                             backgroundImage:
                                             NetworkImage(controller.musicDetails!['user']['image_url']),

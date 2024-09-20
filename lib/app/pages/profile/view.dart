@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen>
         _selectedTabIndex = _tabController.index;
       });
     });
-    FirebaseAnalytics.instance.logEvent(name: "Entered The Profile ");
+   // FirebaseAnalytics.instance.logEvent(name: "Entered The Profile ");
 
   }
 

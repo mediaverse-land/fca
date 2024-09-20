@@ -49,7 +49,7 @@ class _AllToolsScreenState extends State<AllToolsScreen> {
               }, icon: "assets/icons/all_tools_3.svg", name: "channel_31".tr),
               AllToolsButtonWidget(onPressed: (){
                // Get.toNamed(PageRoutes.MEDIASUIT);
-                Get.to(()=>CameraExampleHome(),arguments: [0]);
+                Get.to(()=>StreamHomePage(),arguments: [0]);
 
               }, icon: "assets/icons/stream.svg", name: "channel_31_1".tr),
               // AllToolsButtonWidget(onPressed: (){},

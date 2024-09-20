@@ -221,7 +221,7 @@ class StreamViewController extends GetxController {
       if (microphoneStatus.isGranted) {
         try {
           final String result = await MethodChannel('com.app.mediaverse/rtmp').invokeMethod('startScreenShare', {
-            'rtmpUrl':  '',
+            'rtmpUrl':  programModel!.streamURL,
           });
           print(result);
 

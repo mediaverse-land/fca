@@ -32,7 +32,7 @@ configurations.all {
     }
 }
 android {
-    namespace "com.app.mediaverse"
+    namespace "com.mediaverse.mediaverse"
     compileSdk 34
     ndkVersion '27.0.12077973'
     buildToolsVersion '34.0.0'
@@ -54,7 +54,7 @@ android {
     }
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.app.mediaverseapp"
+        applicationId "com.mediaverse.mediaverse"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 24
@@ -62,7 +62,6 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
-
     signingConfigs {
         release {
             if (System.getenv("CI")) {
@@ -108,11 +107,10 @@ dependencies {
     // See https://firebase.google.com/docs/android/setup#available-libraries
     // For example, add the dependencies for Firebase Authentication and Cloud Firestore
     implementation("com.google.firebase:firebase-auth")
-    implementation 'com.github.pedroSG94.rtmp-rtsp-stream-client-java:rtplibrary:1.9.6'
+    implementation 'com.github.abolfazlirani.rtmp-rtsp-stream-client-java:rtmp:v1.0.3'
+    implementation 'com.github.abolfazlirani.rtmp-rtsp-stream-client-java:rtplibrary:v1.0.3'
+    implementation "androidx.media:media:1.7.0"
 
-    implementation('androidx.core:core-ktx:1.13.1')
-    //Android Native Security
-    implementation "androidx.security:security-crypto:1.1.0-alpha06"
-    implementation 'androidx.preference:preference:1.1.1'
+
 
 }

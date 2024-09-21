@@ -537,24 +537,24 @@ class _MediaSuitScreenState extends State<MediaSuitScreen> {
                 BackWidget()
               ],
             ),
-            Obx(() {
-              return Visibility(
-                visible: editorController.isloadingSubmit.value,
-                child: SizedBox.expand(
-                  child: Container(
-                    color: Colors.black.withOpacity(0.4),
-                    child: Stack(
-                      children: [
-                        Align(
-                          child: Lottie.asset("assets/json/Y8IBRQ38bK.json",
-                              height: 10.h),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }),
+            // Obx(() {
+            //   return Visibility(
+            //     visible: editorController.isloadingSubmit.value,
+            //     child: SizedBox.expand(
+            //       child: Container(
+            //         color: Colors.black.withOpacity(0.4),
+            //         child: Stack(
+            //           children: [
+            //             Align(
+            //               child: Lottie.asset("assets/json/Y8IBRQ38bK.json",
+            //                   height: 10.h),
+            //             )
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   );
+            // }),
             Obx(() {
               return Visibility(
                 visible: editorController.isloadingAssetConvert.value,

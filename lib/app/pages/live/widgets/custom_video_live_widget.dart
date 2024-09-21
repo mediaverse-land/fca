@@ -107,7 +107,7 @@ class _VideoLiveWidgetState extends State<VideoLiveWidget> {
                   child:  Chewie(
                     controller: chewieController,
                   ),
-                ),
+                ),//
               ),
       ])
 

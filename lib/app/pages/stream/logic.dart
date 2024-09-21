@@ -221,7 +221,7 @@ class StreamViewController extends GetxController {
       if (microphoneStatus.isGranted) {
         try {
           final String result = await MethodChannel('com.app.mediaverse/rtmp').invokeMethod('startScreenShare', {
-            'rtmpUrl':  programModel!.streamURL,
+            'rtmpUrl': programModel!.streamURL,
           });
           print(result);
 
@@ -296,7 +296,6 @@ class StreamViewController extends GetxController {
   }
 
   void deleteProgram(String? id) {
-    // پیاده‌سازی تابع
   }
 
   int getUnselectedCamera() {

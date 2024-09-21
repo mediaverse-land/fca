@@ -64,13 +64,13 @@ dependencies:
   image_gallery_saver: ^2.0.3
   screenshot: ^2.1.0
   widget_zoom: ^0.0.3
+  ffmpeg_kit_flutter_min: ^5.1.0
   pinch_zoom: ^2.0.0
   app_links: ^3.5.0
   firebase_core: ^2.24.2
   firebase_messaging: ^14.7.10
   firebase_analytics: ^10.8.0
   path: ^1.8.2
-  ffmpeg_kit_flutter_min: ^5.1.0
   video_editor: ^3.0.0
   fraction: ^4.1.4
   chewie: any

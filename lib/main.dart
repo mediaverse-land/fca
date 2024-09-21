@@ -54,6 +54,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     getDeviceInformation();
     Wakelock.enable();
+    requestExactAlarmPermission();
    // MyApp.analytics.logEvent(name: "entredapp");
   }
 
@@ -94,5 +95,11 @@ class _MyAppState extends State<MyApp> {
       // TODO
     }
 
+  }
+}
+
+Future<void> requestExactAlarmPermission() async {
+  if (await Permission.notification.isDenied) {
+    await Permission.notification.request();
   }
 }

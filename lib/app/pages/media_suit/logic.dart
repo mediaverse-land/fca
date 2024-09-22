@@ -802,29 +802,24 @@ class MediaSuitController extends GetxController {
   String textConfig() {
     if (editTextDataList.isNotEmpty) {
       List<Map<String, dynamic>> jsonList = [];
-      int previousEnd = -1;
+      int previousEnd = 0;
 
       for (int i = 0; i < editTextDataList.length; i++) {
         var currentItem = editTextDataList[i];
-
-
-        //currentItem.updateTimings((80 / 6).toInt(), previousEnd);
-
+        currentItem.start = previousEnd + 1; // Ensure the start is properly updated
+        currentItem.end = currentItem.start + currentItem.second.toInt(); // Calculate the end time based on the item's length
 
         jsonList.add({
           'start': currentItem.start,
-          'end': currentItem.second,
-          'length': currentItem.second,
+          'end': currentItem.end,
+          'length': currentItem.end - currentItem.start,
           'id': currentItem.assetId,
-
         });
 
-
-        previousEnd = currentItem.second.toInt();
+        previousEnd = currentItem.end; // Update previousEnd for the next item
       }
 
       String jsonData = jsonEncode(jsonList);
-
       print(jsonData);
       return jsonData;
     } else {
@@ -833,37 +828,27 @@ class MediaSuitController extends GetxController {
     }
   }
 
-
-
-
-
-
-
   String imageConfig() {
     if (editImageDataList.isNotEmpty) {
       List<Map<String, dynamic>> jsonList = [];
-      int previousEnd = -1;
+      int previousEnd = 0;
 
       for (int i = 0; i < editImageDataList.length; i++) {
         var currentItem = editImageDataList[i];
-
-
-        // currentItem.updateTimings((80 / 6).toInt(), previousEnd);
-
+        currentItem.start = previousEnd + 1;
+        currentItem.end = currentItem.start + currentItem.second.toInt();
 
         jsonList.add({
           'start': currentItem.start,
-          'end': currentItem.second,
-          'length': currentItem.second,
+          'end': currentItem.end,
+          'length': currentItem.end - currentItem.start,
           'id': currentItem.assetId,
-
         });
 
-
-        previousEnd = currentItem.second.toInt();
+        previousEnd = currentItem.end;
       }
-      String jsonData = jsonEncode(jsonList);
 
+      String jsonData = jsonEncode(jsonList);
       print(jsonData);
       return jsonData;
     } else {
@@ -875,29 +860,24 @@ class MediaSuitController extends GetxController {
   String audioConfig() {
     if (editAudioDataList.isNotEmpty) {
       List<Map<String, dynamic>> jsonList = [];
-      int previousEnd = -1;
+      int previousEnd = 0;
 
       for (int i = 0; i < editAudioDataList.length; i++) {
         var currentItem = editAudioDataList[i];
-
-
-        //currentItem.updateTimings((80 / 6).toInt(), previousEnd);
-
+        currentItem.start = previousEnd + 1;
+        currentItem.end = currentItem.start + currentItem.second.toInt();
 
         jsonList.add({
           'start': currentItem.start,
-          'end': currentItem.second,
-          'length': currentItem.second,
+          'end': currentItem.end,
+          'length': currentItem.end - currentItem.start,
           'id': currentItem.assetId,
-
         });
 
-
-        previousEnd = currentItem.second.toInt();
+        previousEnd = currentItem.end;
       }
 
       String jsonData = jsonEncode(jsonList);
-
       print(jsonData);
       return jsonData;
     } else {
@@ -907,59 +887,52 @@ class MediaSuitController extends GetxController {
   }
 
 
-  void exportOnline() async{
-
-
-
+  void exportOnline() async {
+    selectedTextIndex.value = null;
+    selectedVideoIndex.value = null;
+    selectedImageIndex.value = null;
+    selectedAudioIndex.value = null;
+    isTrimming=false;
     print('====================Video==============================');
-    var video =   videoConfig();
+    var video = videoConfig();
     print('==============================Text====================');
-    var  text =  textConfig();
+    var text = textConfig(); // Keep this for logging but don't add it to tacks
     print('====================Image==============================');
-    var image =   imageConfig();
+    var image = imageConfig();
     print('====================Audio==============================');
-    var audi =  audioConfig();
+    var audi = audioConfig();
 
     isloadingSubmit(true);
 
     var dio = Dio();
-    var body ;
+    var body;
 
-    var tacks =[];
-    if(video.contains("null")==false){
-      tacks.add(
-        {
-          "type":"video",
-          "items":jsonDecode(video.replaceAll("asset_id", "id"))
-        }
-      );
+    var tacks = [];
+    if (video.contains("null") == false) {
+      tacks.add({
+        "type": "video",
+        "items": jsonDecode(video.replaceAll("asset_id", "id")),
+      });
     }
-    if(audi.contains("null")==false){
-      tacks.add(
-          {
-            "type":"audio",
-            "items":jsonDecode(audi.replaceAll("asset_id", "id"))
-          }
-      );
+    if (audi.contains("null") == false) {
+      tacks.add({
+        "type": "audio",
+        "items": jsonDecode(audi.replaceAll("asset_id", "id")),
+      });
     }
-    if(image.contains("null")==false){
-      tacks.add(
-          {
-            "type":"image",
-            "items":jsonDecode(image.replaceAll("asset_id", "id"))
-          }
-      );    }
-    if(text.contains("null")==false){
-      tacks.add(
-          {
-            "type":"text",
-            "items":jsonDecode(text.replaceAll("asset_id", "id"))
-          }
-      );    }
+    if (image.contains("null") == false) {
+      tacks.add({
+        "type": "image",
+        "items": jsonDecode(image.replaceAll("asset_id", "id")),
+      });
+    }
+
+    // Do not add 'text' since it is not an accepted track type.
+    // You can still handle text differently if necessary.
+
     body = {
-      'tracks':tacks
+      'tracks': tacks,
     };
-
 
     print('ShareAccountLogic.sendIDTokenToServer = ${jsonEncode(body)}');
     dio.interceptors.add(MediaVerseConvertInterceptor());
@@ -968,37 +941,31 @@ class MediaSuitController extends GetxController {
     try {
       var response = await dio.post(
         '${Constant.HTTP_HOST}tasks/mix',
-        data:jsonEncode(body),
+        data: jsonEncode(body),
         options: Options(
           headers: {
             'Authorization': 'Bearer ${GetStorage().read("token")}',
             'X-App': '_Android',
           },
         ),
-
       );
 
-      if (response.statusCode! >= 200||response.statusCode! < 300) {
+      if (response.statusCode! >= 200 || response.statusCode! < 300) {
         print('==================================================================================================');
         print('Time line Asset Create successfully = ${response.data}');
         print('==================================================================================================');
         clearTimeline();
-        Constant.showMessege("Time line Asset Create successfully Wait To Render...");
-
-
+        Constant.showMessege("Time line Asset Create successfully. Wait To Render...");
       } else {
         isloadingSubmit(false);
-
         print('Failed to upload file: ${response.statusMessage}');
       }
     } on DioError catch (e) {
       isloadingSubmit(false);
-
       print('DioError: ${e.response!.statusCode}');
     }
-
-
   }
+
 
   void setAssetLoadingValue(String s) {
   //  debugger();

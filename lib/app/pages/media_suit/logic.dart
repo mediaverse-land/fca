@@ -763,6 +763,7 @@ class MediaSuitController extends GetxController {
     }
   }
 
+
  String videoConfig() {
     if (editVideoDataList.isNotEmpty) {
       List<Map<String, dynamic>> jsonList = [];
@@ -887,12 +888,22 @@ class MediaSuitController extends GetxController {
   }
 
 
+  List<List<T>> chunkList<T>(List<T> list, int chunkSize) {
+    List<List<T>> chunks = [];
+    for (var i = 0; i < list.length; i += chunkSize) {
+      chunks.add(
+        list.sublist(i, i + chunkSize > list.length ? list.length : i + chunkSize),
+      );
+    }
+    return chunks;
+  }
+
   void exportOnline() async {
     selectedTextIndex.value = null;
     selectedVideoIndex.value = null;
     selectedImageIndex.value = null;
     selectedAudioIndex.value = null;
-    isTrimming=false;
+    isTrimming = false;
     print('====================Video==============================');
     var video = videoConfig();
     print('==============================Text====================');
@@ -908,63 +919,85 @@ class MediaSuitController extends GetxController {
     var body;
 
     var tacks = [];
+
+    // Video
     if (video.contains("null") == false) {
-      tacks.add({
-        "type": "video",
-        "items": jsonDecode(video.replaceAll("asset_id", "id")),
-      });
-    }
-    if (audi.contains("null") == false) {
-      tacks.add({
-        "type": "audio",
-        "items": jsonDecode(audi.replaceAll("asset_id", "id")),
-      });
-    }
-    if (image.contains("null") == false) {
-      tacks.add({
-        "type": "image",
-        "items": jsonDecode(image.replaceAll("asset_id", "id")),
-      });
-    }
-
-    // Do not add 'text' since it is not an accepted track type.
-    // You can still handle text differently if necessary.
-
-    body = {
-      'tracks': tacks,
-    };
-
-    print('ShareAccountLogic.sendIDTokenToServer = ${jsonEncode(body)}');
-    dio.interceptors.add(MediaVerseConvertInterceptor());
-    dio.interceptors.add(CurlLoggerDioInterceptor());
-
-    try {
-      var response = await dio.post(
-        '${Constant.HTTP_HOST}tasks/mix',
-        data: jsonEncode(body),
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer ${GetStorage().read("token")}',
-            'X-App': '_Android',
-          },
-        ),
-      );
-
-      if (response.statusCode! >= 200 || response.statusCode! < 300) {
-        print('==================================================================================================');
-        print('Time line Asset Create successfully = ${response.data}');
-        print('==================================================================================================');
-        clearTimeline();
-        Constant.showMessege("Time line Asset Create successfully. Wait To Render...");
-      } else {
-        isloadingSubmit(false);
-        print('Failed to upload file: ${response.statusMessage}');
+      var videoItems = jsonDecode(video.replaceAll("asset_id", "id"));
+      var videoChunks = chunkList(videoItems, 5); // Split into batches of 5
+      for (var chunk in videoChunks) {
+        tacks.add({
+          "type": "video",
+          "items": chunk,
+        });
       }
-    } on DioError catch (e) {
-      isloadingSubmit(false);
-      print('DioError: ${e.response!.statusCode}');
     }
+
+    // Audio
+    if (audi.contains("null") == false) {
+      var audioItems = jsonDecode(audi.replaceAll("asset_id", "id"));
+      var audioChunks = chunkList(audioItems, 5); // Split into batches of 5
+      for (var chunk in audioChunks) {
+        tacks.add({
+          "type": "audio",
+          "items": chunk,
+        });
+      }
+    }
+
+    // Image
+    if (image.contains("null") == false) {
+      var imageItems = jsonDecode(image.replaceAll("asset_id", "id"));
+      var imageChunks = chunkList(imageItems, 5); // Split into batches of 5
+      for (var chunk in imageChunks) {
+        tacks.add({
+          "type": "image",
+          "items": chunk,
+        });
+      }
+    }
+
+    // Send each chunk to the server
+    for (var track in tacks) {
+      body = {
+        'tracks': [track],
+      };
+
+      print('ShareAccountLogic.sendIDTokenToServer = ${jsonEncode(body)}');
+      dio.interceptors.add(MediaVerseConvertInterceptor());
+      dio.interceptors.add(CurlLoggerDioInterceptor());
+
+      try {
+        var response = await dio.post(
+          '${Constant.HTTP_HOST}tasks/mix',
+          data: jsonEncode(body),
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer ${GetStorage().read("token")}',
+              'X-App': '_Android',
+            },
+          ),
+        );
+
+        if (response.statusCode! >= 200 || response.statusCode! < 300) {
+          print('==================================================================================================');
+          print('Time line Asset Create successfully = ${response.data}');
+          print('==================================================================================================');
+          Constant.showMessege("Timeline Asset Create successfully. Wait To Render...");
+        } else {
+          print('Failed to upload file: ${response.statusMessage}');
+          print('Response data: ${response.data}');
+        }
+      } on DioError catch (e) {
+        print('DioError: ${e.response!.statusCode}');
+        print('Error details: ${e.response!.data}');
+        isloadingSubmit(false);
+      }
+    }
+
+    clearTimeline();
+    isloadingSubmit(false);
   }
+
 
 
   void setAssetLoadingValue(String s) {

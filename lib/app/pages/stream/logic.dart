@@ -48,7 +48,7 @@ class StreamViewController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    const platform = MethodChannel('com.app.mediaverse/rtmp');
+    const platform = MethodChannel('com.mediaverse.mediaverse/rtmp');
 
     platform.setMethodCallHandler((call) async {
       if (call.method == "stopTheStream") {
@@ -220,7 +220,7 @@ class StreamViewController extends GetxController {
 
       if (microphoneStatus.isGranted) {
         try {
-          final String result = await MethodChannel('com.app.mediaverse/rtmp').invokeMethod('startScreenShare', {
+          final String result = await MethodChannel('com.mediaverse.mediaverse/rtmp').invokeMethod('startScreenShare', {
             'rtmpUrl': programModel!.streamURL,
           });
           print(result);
@@ -246,7 +246,7 @@ class StreamViewController extends GetxController {
 
   Future<void> stopScreenStreaming() async {
     try {
-      final String result = await MethodChannel('com.app.mediaverse/rtmp').invokeMethod('stopScreenShare');
+      final String result = await MethodChannel('com.mediaverse.mediaverse/rtmp').invokeMethod('stopScreenShare');
       print(result);
 
       isScreenStreaming = false;

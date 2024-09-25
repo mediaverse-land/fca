@@ -25,7 +25,7 @@ class LoginController extends GetxController implements RequestInterface {
 
   late ApiRequster apiRequster;
 
-  Country code = Country( phoneCode: '', countryCode: '+98', e164Sc: 1, geographic:false, level: 1, name: '', example: '', displayName: '', displayNameNoCountryCode: '', e164Key: '');
+  CountryCode code = CountryCode(dialCode: "+33");
   var timeLeft = 30.obs; // Observable variable
   Timer? _timer;
 
@@ -158,7 +158,7 @@ class LoginController extends GetxController implements RequestInterface {
   void _getPhoneReuqest()async {
 
     var body = {
-      "cellphone": code.countryCode+eTextEditingControllerPhone.text,
+      "cellphone": code.dialCode!+eTextEditingControllerPhone.text,
       "password":eTextEditingControllerPassword.text
     };
      apiRequster.request("auth/sign-in", ApiRequster.MHETOD_POST, 1,body: body);
@@ -209,7 +209,7 @@ class LoginController extends GetxController implements RequestInterface {
 
   void _getOTPReuqest() {
     var body = {
-      "cellphone":(code.countryCode??"")+(eTextEditingControllerPhone.text),
+      "cellphone":(code.dialCode??"")+(eTextEditingControllerPhone.text),
     };
     print('LoginController._getOTPReuqest = ${body}');
     apiRequster.request("auth/otp/request", ApiRequster.MHETOD_POST, 2,body: body);
@@ -217,7 +217,7 @@ class LoginController extends GetxController implements RequestInterface {
   void getOTPSumbit() {
     isloading(true);
     var body = {
-      "cellphone":"${code.countryCode}${eTextEditingControllerPhone.text}",
+      "cellphone":"${code.dialCode}${eTextEditingControllerPhone.text}",
       "otp":eTextEditingControllerOTP.text,
     };
     apiRequster.request("auth/otp/submit", ApiRequster.MHETOD_POST, 1,body: body);

@@ -2,6 +2,7 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flu_wake_lock/flu_wake_lock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -27,10 +28,13 @@ void main()async{
   var details = await FlutterLocalNotificationsPlugin()
       .getNotificationAppLaunchDetails();
 
+  FluWakeLock _fluWakeLock = FluWakeLock();
+
+  _fluWakeLock.enable();
   if (details!=null&&details.didNotificationLaunchApp) {
     print(details!.notificationResponse!.payload);
   }
-  //await FirebaseController().init();
+  await FirebaseController().init();
   runApp(Sizer(builder: (context, orientation, deviceType) {
     return const MyApp();
   }));
@@ -53,7 +57,6 @@ class _MyAppState extends State<MyApp> {
     // TODO: implement initState
     super.initState();
     getDeviceInformation();
-    Wakelock.enable();
     requestExactAlarmPermission();
    // MyApp.analytics.logEvent(name: "entredapp");
   }

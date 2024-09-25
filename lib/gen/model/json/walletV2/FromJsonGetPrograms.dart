@@ -187,12 +187,7 @@ class ProgramModel {
     _name = json['name'];
     _userId = json['user_id'];
     _source = json['source'];
-    // if (json['details'] != null) {
-    //   _details = [];
-    //   json['details'].forEach((v) {
-    //     _details?.add(v);
-    //   });
-    // }
+    _details = json['details'];
     _lastEvent = json['last_event'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
@@ -216,7 +211,7 @@ class ProgramModel {
   String? _name;
   String? _userId;
   String? _source;
-  List<dynamic>? _details;
+  dynamic _details;
   dynamic _lastEvent;
   String? _createdAt;
   String? _updatedAt;
@@ -229,7 +224,7 @@ class ProgramModel {
   String? get name => _name;
   String? get userId => _userId;
   String? get source => _source;
-  List<dynamic>? get details => _details;
+  dynamic get details => _details;
   dynamic get lastEvent => _lastEvent;
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;

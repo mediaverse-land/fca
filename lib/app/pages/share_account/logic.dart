@@ -680,6 +680,12 @@ class ShareAccountLogic extends GetxController implements RequestInterface {
      await onAddDestinationToProgramRequest(id, s.id.toString(),index==destintionList.length);
     });
 
+    if(destintionList.isEmpty){
+      iscreateProgramloading(false);
+      Get.back();
+      isloading(true);
+      getExternalAccount();
+    }
   }
   Future<bool> onAddDestinationToProgramRequest( prgoramID,destinationID,bool isLast) async {
     try {

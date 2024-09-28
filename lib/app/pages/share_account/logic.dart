@@ -266,10 +266,11 @@ class ShareAccountLogic extends GetxController implements RequestInterface {
 
     print('ShareAccountLogic.sendIDTokenToServer = ${body}');
     dio.interceptors.add(MediaVerseConvertInterceptor());
+    dio.interceptors.add(CurlLoggerDioInterceptor());
 
     try {
       var response = await dio.post(
-        '${Constant.HTTP_HOST}destinations',
+        '${Constant.HTTP_HOST}${(i==1)?"external-accounts":"destinations"}',
         data: body,
         options: Options(
           headers: {

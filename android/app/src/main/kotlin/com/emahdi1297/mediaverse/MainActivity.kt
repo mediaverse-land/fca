@@ -8,7 +8,9 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import org.checkerframework.checker.nullness.qual.NonNull
 
 class MainActivity : FlutterActivity() {
 
@@ -19,22 +21,22 @@ class MainActivity : FlutterActivity() {
 
     private lateinit var methodChannel: MethodChannel
     private lateinit var mediaProjectionManager: MediaProjectionManager
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+    override fun configureFlutterEngine( flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
             // This method is invoked on the main thread.
                 call, result ->
             if (call.method == "startScreenShare") {
                 rtmpUrl = call.argument<String>("rtmpUrl")
-                    if (rtmpUrl != null) {
-                        startScreenCapture()
-                        result.success("Screen sharing started")
-                    } else {
-                        result.error("INVALID_ARGUMENT", "RTMP URL is required", null)
-                    }
-            } if (call.method == "stopScreenShare") {
-            stopScreenCapture()
-                   result.success("Screen sharing stopped")
+                if (rtmpUrl != null) {
+                    startScreenCapture()
+                    result.success("Screen sharing started")
+                } else {
+                    result.error("INVALID_ARGUMENT", "RTMP URL is required", null)
+                }
+            }else if (call.method == "stopScreenShare") {
+                stopScreenCapture()
+                result.success("Screen sharing stopped")
             } else {
                 result.notImplemented()
             }

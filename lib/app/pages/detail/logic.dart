@@ -881,6 +881,8 @@ class DetailController extends GetxController {
       } else {
         // Handle errors
       }
+      log('DetailController._fetchMediaData11111 = ${externalAccountlist.length}');
+
     } catch (e) {
       isLoadingChannel(false);
 
@@ -898,7 +900,7 @@ class DetailController extends GetxController {
   void onSendYouTubeRequest(bool youtubeMode)async {
     Map<String,dynamic> body = {
       "file": file_id,
-      "account": externalAccountlist.where((element) => element.type.toString().contains("1")).elementAt(enableChannel).id.toString(),
+      "account": externalAccountlist.elementAt(enableChannel).id.toString(),
 
     };
     print('DetailController.onSendYouTubeRequest = ${formatDateTime( isSeletedNow?DateTime.now():dateTime)}');

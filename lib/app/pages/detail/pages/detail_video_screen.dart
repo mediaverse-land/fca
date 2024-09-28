@@ -32,6 +32,7 @@ class DetailVideoScreen extends StatelessWidget {
   final videoController = Get.put(DetailController(4),
       tag: "${DateTime.now().microsecondsSinceEpoch}");
 
+  var idAssetMediaValte = Get.arguments['idAssetMedia'];
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -80,7 +81,6 @@ class DetailVideoScreen extends StatelessWidget {
           }
         }),
         body: Obx(() {
-          log('DetailVideoScreen.build videoController.videoDetails? = ${videoController.videoDetails}');
           return videoController.isLoadingVideos.value
               ? Center(child: CircularProgressIndicator())
               : Stack(
@@ -300,7 +300,7 @@ class DetailVideoScreen extends StatelessWidget {
                     }),
                     BackWidget(
                       idAssetMedia:
-                          Get.arguments['idAssetMedia'] == "idAssetMedia",
+                      idAssetMediaValte == "idAssetMedia",
                     )
                   ],
                 );

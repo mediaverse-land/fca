@@ -103,6 +103,7 @@ class FirebaseController extends GetxController implements RequestInterface {
         onDidReceiveBackgroundNotificationResponse:
             FirebaseController.onDidReceiveBackgroundNotificationResponse,
         onDidReceiveNotificationResponse: (s) {
+    //  debugger();
       sendToAssetPage(s.payload ?? "");
     });
   }

@@ -25,7 +25,6 @@ class DetailsBottomWidget extends StatefulWidget {
 class _DetailsBottomWidgetState extends State<DetailsBottomWidget> {
   @override
   Widget build(BuildContext context) {
-    print('_DetailsBottomWidgetState.build = ${widget.detailController.detailss!['license_type']}');
     return Container(
       width: 100.w,
       height: 22.h,

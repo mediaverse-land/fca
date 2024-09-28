@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id 'com.google.gms.google-services'
 
 }
 def keystoreProperties = new Properties()
@@ -32,7 +33,7 @@ configurations.all {
     }
 }
 android {
-    namespace "com.mediaverse.mediaverse"
+    namespace "com.emahdi1297.mediaverse"
     compileSdk 34
     ndkVersion '27.0.12077973'
     buildToolsVersion '34.0.0'
@@ -54,7 +55,7 @@ android {
     }
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.mediaverse.mediaverse"
+        applicationId "com.emahdi1297.mediaverse"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 24

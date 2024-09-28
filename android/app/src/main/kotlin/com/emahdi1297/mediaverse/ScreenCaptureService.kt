@@ -1,4 +1,4 @@
-package com.mediaverse.mediaverse
+package com.emahdi1297.mediaverse
 
 import android.app.*
 import android.content.Context
@@ -13,7 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.abolfazlirani.rtmp.utils.ConnectCheckerRtmp
 import com.abolfazlirani.rtplibrary.rtmp.RtmpDisplay
-import com.mediaverse.mediaverse.R
+import com.emahdi1297.mediaverse.R
 
 class ScreenCaptureService : Service(), ConnectCheckerRtmp {
 

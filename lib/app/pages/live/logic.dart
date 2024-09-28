@@ -3,11 +3,13 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:curl_logger_dio_interceptor/curl_logger_dio_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:mediaverse/app/common/utils/dio_inperactor.dart';
 import 'package:mediaverse/app/pages/plus_section/logic.dart';
 import 'package:mediaverse/app/pages/plus_section/widget/first_form.dart';
 import 'package:path_provider/path_provider.dart';
@@ -102,7 +104,11 @@ class LiveController extends GetxController{
       final token = GetStorage().read("token");
       String apiUrl = '${Constant.HTTP_HOST}tasks/channel-record';
 
-      var response = await Dio().post(
+      Dio dio= Dio();
+      dio.interceptors.add(MediaVerseConvertInterceptor());
+      dio.interceptors.add(CurlLoggerDioInterceptor());//
+      print('LiveController.postTimeRecord 1');
+      var response = await dio.post(
         apiUrl,
         data: {
           "channel": channelId.toString(),

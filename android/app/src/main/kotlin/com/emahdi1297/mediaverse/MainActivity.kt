@@ -1,4 +1,4 @@
-package com.mediaverse.mediaverse
+package com.emahdi1297.mediaverse
 
 import android.app.Activity
 import android.content.Intent
@@ -19,32 +19,29 @@ class MainActivity : FlutterActivity() {
 
     private lateinit var methodChannel: MethodChannel
     private lateinit var mediaProjectionManager: MediaProjectionManager
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        methodChannel =
-            flutterEngine?.dartExecutor?.binaryMessenger?.let { MethodChannel(it, CHANNEL) }!!
-        methodChannel.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "startScreenShare" -> {
-                    rtmpUrl = call.argument<String>("rtmpUrl")
+    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
+            // This method is invoked on the main thread.
+                call, result ->
+            if (call.method == "startScreenShare") {
+                rtmpUrl = call.argument<String>("rtmpUrl")
                     if (rtmpUrl != null) {
                         startScreenCapture()
                         result.success("Screen sharing started")
                     } else {
                         result.error("INVALID_ARGUMENT", "RTMP URL is required", null)
                     }
-                }
-                "stopScreenShare" -> {
-                    stopScreenCapture()
-                    result.success("Screen sharing stopped")
-                }
-                else -> {
-                    result.notImplemented()
-                }
+            } if (call.method == "stopScreenShare") {
+            stopScreenCapture()
+                   result.success("Screen sharing stopped")
+            } else {
+                result.notImplemented()
             }
         }
+    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         mediaProjectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
     }

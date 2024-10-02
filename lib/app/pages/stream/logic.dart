@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/animation.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:mediaverse/app/common/app_config.dart';
@@ -21,6 +22,7 @@ class StreamViewController extends GetxController {
   List<CameraDescription> cameras = [];
   bool isVisible = true;
   var isLoading = true.obs;
+   AnimationController? animationController;
 
   ProgramModel? programModel;
   ShareAccountLogic shareAccountLogic = Get.put(ShareAccountLogic(), tag: "stream");
@@ -150,6 +152,10 @@ class StreamViewController extends GetxController {
   }
 
   Future<String?> startVideoStreaming() async {
+    animationController!.forward();
+    Future.delayed(Duration(seconds: 4)).then((onValue){
+      _startTimer();
+    });
     if (!isControllerInitialized) return null;
     if (controller?.value.isStreamingVideoRtmp ?? false) return null;
 
@@ -159,13 +165,7 @@ class StreamViewController extends GetxController {
       _showCameraException(e);
       return null;
     }
-    isRecordingTimeVisible(true);
-    _recordingDuration = Duration.zero;
-    _recordingTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      _recordingDuration += Duration(seconds: 1);
-      recordingTime.value = _formatDuration(_recordingDuration);
-      update();
-    });
+
     return url;
   }
 
@@ -320,5 +320,15 @@ class StreamViewController extends GetxController {
     super.onClose();
     _screenRecordingTimer?.cancel();
     _recordingTimer?.cancel();
+  }
+
+  void _startTimer() {
+    isRecordingTimeVisible(true);
+    _recordingDuration = Duration.zero;
+    _recordingTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _recordingDuration += Duration(seconds: 1);
+      recordingTime.value = _formatDuration(_recordingDuration);
+      update();
+    });
   }
 }

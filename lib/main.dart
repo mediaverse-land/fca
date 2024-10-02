@@ -14,7 +14,6 @@ import 'package:mediaverse/app/pages/wrapper/logic.dart';
 import 'package:mediaverse/app/pages/wrapper/state.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
-import 'package:wakelock/wakelock.dart';
 
 import 'app/common/app_color.dart';
 import 'app/common/app_route.dart';

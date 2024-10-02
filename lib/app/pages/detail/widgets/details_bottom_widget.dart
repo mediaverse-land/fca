@@ -89,18 +89,19 @@ class _DetailsBottomWidgetState extends State<DetailsBottomWidget> {
                     children: [
                       Expanded(
                         child: Text(
-                            '${Constant.getDropDownByPlan(widget.detailController.detailss!['plan'].toString())}'),
+                            '${Constant.getDropDownByPlan(widget.detailController.detailss!['license_type'].toString())}'),
                       ),
-                      Icon(Icons.share,color: Colors.white.withOpacity(0.7),)
+
                     ],
                   )),
-                  if(!widget.detailController.detailss!['plan'].toString().contains("1"))  Row(
+                  if(!widget.detailController.detailss!['license_type'].toString().contains("1"))  Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if(!widget.detailController.detailss!['plan'].toString().contains("1"))    Text("${(widget.detailController.detailss!['price']/100).toString()} €"),
-                      if(!widget.detailController.detailss!['plan'].toString().contains("1"))  SizedBox(width: 3.w,),
+                      if(!widget.detailController.detailss!['license_type'].toString().contains("1"))    Text("${(widget.detailController.detailss!['price']/100).toString()} €"),
+                      if(!widget.detailController.detailss!['license_type'].toString().contains("1"))  SizedBox(width: 3.w,),
                     ],
-                  )
+                  ),
+                  Icon(Icons.share,color: Colors.white.withOpacity(0.7),)
                 ],
               ),
             ),

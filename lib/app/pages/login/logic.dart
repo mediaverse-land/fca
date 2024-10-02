@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:country_code_picker/country_code_picker.dart';
+
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,6 +18,7 @@ import 'package:mediaverse/gen/model/enums/login_enum.dart';
 import 'package:mediaverse/gen/model/json/FromJsonGetLogin.dart';
 import 'package:meta/meta.dart';
 
+import '../../../gen/model/json/FromJsonGetLoginV2.dart';
 import '../../common/app_color.dart';
 
 class LoginController extends GetxController implements RequestInterface {
@@ -154,11 +158,12 @@ class LoginController extends GetxController implements RequestInterface {
   void _getPhoneReuqest()async {
 
     var body = {
-      "cellphone":eTextEditingControllerPhone.text,
+      "cellphone": code.dialCode!+eTextEditingControllerPhone.text,
       "password":eTextEditingControllerPassword.text
     };
      apiRequster.request("auth/sign-in", ApiRequster.MHETOD_POST, 1,body: body);
-   //  apiRequster.request("https://api64.ipify.org?format=json", ApiRequster.MHETOD_GET, 1, daynamicUrl: true);
+    print('LoginController._getPhoneReuqest = ${body}');
+    //  apiRequster.request("https://api64.ipify.org?format=json", ApiRequster.MHETOD_GET, 1, daynamicUrl: true);
   }
 
   void _getUseranmeReuqest() {
@@ -196,7 +201,7 @@ class LoginController extends GetxController implements RequestInterface {
 
     box.write("islogin", true);
 
-    FromJsonGetLogin getLogin = FromJsonGetLogin.fromJson(jsonDecode(source));
+    FromJsonGetLoginV2 getLogin = FromJsonGetLoginV2.fromJson(jsonDecode(source));
     box.write("token", getLogin.token??"");
     box.write("userid", getLogin.user!.id.toString());
     Get.offAllNamed(PageRoutes.WRAPPER);
@@ -206,6 +211,7 @@ class LoginController extends GetxController implements RequestInterface {
     var body = {
       "cellphone":(code.dialCode??"")+(eTextEditingControllerPhone.text),
     };
+    print('LoginController._getOTPReuqest = ${body}');
     apiRequster.request("auth/otp/request", ApiRequster.MHETOD_POST, 2,body: body);
   }
   void getOTPSumbit() {
@@ -219,7 +225,7 @@ class LoginController extends GetxController implements RequestInterface {
 
   void sendIDTokenToServer(String s) {
     apiRequster.request("auth/google", ApiRequster.MHETOD_POST, 1,body: {
-      "id_token":s
+      "access_token":s
     });
 
   }

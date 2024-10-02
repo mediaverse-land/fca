@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:math';
 import 'dart:ui';
 
@@ -12,10 +13,11 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:mediaverse/app/pages/detail/widgets/back_widget.dart';
 import 'package:mediaverse/app/pages/media_suit/test.dart';
+import 'package:mediaverse/app/pages/media_suit/widget/anim/timeline_blinking_icon_anim_widget.dart';
 import 'package:mediaverse/app/pages/media_suit/widget/audio_player_widget.dart';
 import 'package:mediaverse/app/pages/media_suit/widget/time_line_model.dart';
+import 'package:mediaverse/app/pages/media_suit/widget/video_player_online_widget.dart';
 import 'package:lottie/lottie.dart';
-
 
 import 'package:sizer/sizer.dart';
 import 'package:video_player/video_player.dart';
@@ -51,66 +53,35 @@ class _MediaSuitScreenState extends State<MediaSuitScreen> {
   @override
   void initState() {
     super.initState();
+    editorController.isTrimming = false;
     scrollSynchronizer = ScrollSynchronizer();
-    scrollSynchronizer.registerScrollController(_listScrollControllerVideo);
-    scrollSynchronizer.registerScrollController(_listScrollControllerText);
-    scrollSynchronizer.registerScrollController(_listScrollControllerImage);
-    scrollSynchronizer.registerScrollController(_listScrollControllerAudio);
+
+    // Register all scroll controllers initially
     scrollSynchronizer.registerScrollController(_rulerScrollController);
-    //initScroll();
+    scrollSynchronizer.registerScrollController(_listScrollControllerImage);
+    scrollSynchronizer.registerScrollController(_listScrollControllerText);
+    scrollSynchronizer.registerScrollController(_listScrollControllerAudio);
+    scrollSynchronizer.registerScrollController(_listScrollControllerVideo);
+
+
   }
 
-  // void initScroll() {
-  //   final editorController = Get.find<MediaSuitController>();
-  //
-  //   if (editorController.selectedVideoIndex.value != null) {
-  //     scrollSynchronizer.registerScrollController(_listScrollControllerVideo);
-  //     scrollSynchronizer.registerScrollController(_rulerScrollController);
-  //   } else {
-  //     scrollSynchronizer.unregisterScrollController(_listScrollControllerVideo);
-  //     scrollSynchronizer.unregisterScrollController(_rulerScrollController);
-  //   }
-  //
-  //   if (editorController.selectedImageIndex.value != null) {
-  //     scrollSynchronizer.registerScrollController(_listScrollControllerImage);
-  //     scrollSynchronizer.registerScrollController(_rulerScrollController);
-  //   } else {
-  //     scrollSynchronizer.unregisterScrollController(_listScrollControllerImage);
-  //     scrollSynchronizer.unregisterScrollController(_rulerScrollController);
-  //   }
-  //
-  //   if (editorController.selectedAudioIndex.value != null) {
-  //     scrollSynchronizer.registerScrollController(_listScrollControllerAudio);
-  //     scrollSynchronizer.registerScrollController(_rulerScrollController);
-  //   } else {
-  //     scrollSynchronizer.unregisterScrollController(_listScrollControllerAudio);
-  //     scrollSynchronizer.unregisterScrollController(_rulerScrollController);
-  //   }
-  //
-  //   if (editorController.selectedTextIndex.value != null) {
-  //     scrollSynchronizer.registerScrollController(_listScrollControllerText);
-  //     scrollSynchronizer.registerScrollController(_rulerScrollController);
-  //   } else {
-  //     scrollSynchronizer.unregisterScrollController(_listScrollControllerText);
-  //     scrollSynchronizer.unregisterScrollController(_rulerScrollController);
-  //   }
-  // }
+
   final editorController = Get.find<MediaSuitController>();
 
+  Timer? _resizeTimer;
+  double _lastPanUpdateDx = 0.0;
+  int _currentResizingIndex = -1;
+  bool _isTransparentContainerAdded = true;
+  bool _isForward = true;
 
   @override
   Widget build(BuildContext context) {
     int totalItemCount = ((maxValue - minValue) / (itemWidth / 10)).round();
 
-    final h = MediaQuery
-        .of(context)
-        .size
-        .height;
+    final h = MediaQuery.of(context).size.height;
 
-    final w = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final w = MediaQuery.of(context).size.width;
     Widget _proxyDecorator(Widget child, int index, Animation<double> animation,
         Color color, Color shadowColor) {
       return AnimatedBuilder(
@@ -129,28 +100,14 @@ class _MediaSuitScreenState extends State<MediaSuitScreen> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: Color(0xff000033),
-      body: GestureDetector(
-        onTap: () {
-          editorController.selectedTextIndex
-              .value = null;
-          editorController.selectedVideoIndex
-              .value = null;
-          editorController.selectedImageIndex
-              .value = null;
-          editorController.selectedAudioIndex
-              .value = null;
-          setState(() {
-
-          });
-        },
-        child: Stack(
+    return WillPopScope(
+      child: Scaffold(
+        backgroundColor: Color(0xff000033),
+        body: Stack(
           children: [
             Stack(
               alignment: Alignment.bottomCenter,
               children: [
-
                 Positioned(
                     bottom: h * 0.17,
                     left: 0,
@@ -160,803 +117,444 @@ class _MediaSuitScreenState extends State<MediaSuitScreen> {
                         child: SvgPicture.asset(
                           'assets/images/line_editor.svg',
                           fit: BoxFit.cover,
-                        )
-                    )
-                ),
+                        ))),
                 Positioned(
                   left: 0,
                   right: 0,
                   bottom: 0,
                   child: Column(
                     children: [
-
-
                       SizedBox(height: h * 0.1),
-
                       Container(
-
                         color: Color(0xff000033),
-                        child: Obx(() =>
-                            Column(
+                        child: Obx(
+                          () => Column(
+                            children: [
+                              Obx(() {
+                                final selectedVideoIndex =
+                                    editorController.selectedVideoIndex.value;
+                                final selectedImageIndex =
+                                    editorController.selectedImageIndex.value;
+                                final selectedAudioIndex =
+                                    editorController.selectedAudioIndex.value;
+                                final selectedTextIndex =
+                                    editorController.selectedTextIndex.value;
 
-                              children: [
+                                if (selectedVideoIndex != null &&
+                                    editorController
+                                        .isWaitingAssetConvert.isFalse) {
+                                  //  editorController.player.stop();
 
-                                Obx(() {
-                                  final selectedVideoIndex = editorController
-                                      .selectedVideoIndex.value;
-                                  final selectedImageIndex = editorController
-                                      .selectedImageIndex.value;
-                                  final selectedAudioIndex = editorController
-                                      .selectedAudioIndex.value;
-                                  final selectedTextIndex = editorController
-                                      .selectedTextIndex.value;
-
-
-                                  if (selectedVideoIndex != null&&editorController.isWaitingAssetConvert.isFalse) {
-                                    //  editorController.player.stop();
-
-                                    return VideoPlayerEditor(
-                                      key: UniqueKey(),
-                                      scrollController: _rulerScrollController,
-
-                                      mediaSuitController: editorController,
-                                      videoUrls: [
+                                  return VideoPlayerEditor(
+                                    key: UniqueKey(),
+                                    scrollController: _rulerScrollController,
+                                    mediaSuitController: editorController,
+                                    videoUrls: [
+                                      editorController
+                                          .editVideoDataList[selectedVideoIndex]
+                                          .urlMedia
+                                    ],
+                                  );
+                                } else if (selectedImageIndex != null &&
+                                    editorController
+                                        .isWaitingAssetConvert.isFalse) {
+                                  return SizedBox(
+                                      height: 33.h,
+                                      width: double.infinity,
+                                      child: Image.network(
                                         editorController
-                                            .editVideoDataList[selectedVideoIndex]
-                                            .urlMedia
-                                      ],
-                                    );
-                                  } else if (selectedImageIndex != null&&editorController.isWaitingAssetConvert.isFalse) {
-                                    return SizedBox(
-                                        height: 33.h,
-                                        width: double.infinity,
-                                        child: Image.network(editorController
-                                            .editImageDataList[selectedImageIndex]
-                                            .urlMedia!, fit: BoxFit.cover,));
-                                  } else if (selectedAudioIndex != null&&editorController.isWaitingAssetConvert.isFalse) {
-                                    return SizedBox(
-                                        height: 30.h,
-                                        child: AudioPlayerWidget(
-                                          urlAudio: editorController
-                                              .editAudioDataList[selectedAudioIndex]
-                                              .urlMedia!,));
-                                  } else if (selectedTextIndex != null&&editorController.isWaitingAssetConvert.isFalse) {
-                                    //editorController.player.stop();
-                                    return SizedBox(
-                                      height: 27.h,
+                                            .editImageDataList[
+                                                selectedImageIndex]
+                                            .urlMedia!,
+                                        fit: BoxFit.cover,
+                                      ));
+                                } else if (selectedAudioIndex != null &&
+                                    editorController
+                                        .isWaitingAssetConvert.isFalse) {
+                                  return SizedBox(
+                                      height: 30.h,
+                                      child: AudioPlayerWidget(
+                                        urlAudio: editorController
+                                            .editAudioDataList[
+                                                selectedAudioIndex]
+                                            .urlMedia!,
+                                      ));
+                                } else if (selectedTextIndex != null &&
+                                    editorController
+                                        .isWaitingAssetConvert.isFalse) {
+                                  //editorController.player.stop();
+                                  return SizedBox(
+                                    height: 27.h,
+                                    child: Text(
+                                      editorController
+                                          .editTextDataList[selectedTextIndex]
+                                          .name
+                                          .toUpperCase(),
+                                    ),
+                                  );
+                                } else {
+                                  //editorController.player.stop();
+                                  return SizedBox(
                                       child: Text(
+                                    'Media has not been selected yet!',
+                                    style: TextStyle(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        fontSize: 13),
+                                  ));
+                                }
+                              }),
 
-                                        editorController
-                                            .editTextDataList[selectedTextIndex]
-                                            .name
-                                            .toUpperCase(),
-                                      ),
-                                    );
-                                  } else {
-                                    //editorController.player.stop();
-                                    return SizedBox(
-                                        child: Text(
-                                          'Media has not been selected yet!',
-                                          style: TextStyle(
-                                              color: Colors.grey.withOpacity(0.3),
-                                              fontSize: 13
-                                          ),)
-                                    );
-                                  }
-                                }),
+                              editorController.selectedVideoIndex.value != null
+                                  ? SizedBox()
+                                  : CustomRulerTimelineOtherAssetsWidget1(
+                                      minValue: minValue,
+                                      maxValue: maxValue,
+                                      value: value,
+                                      majorTick: 10,
+                                      // Adjust as per your preference
+                                      minorTick: 1,
+                                      // Set to 1 for closer ticks
+                                      labelValuePrecision: 0,
+                                      tickValuePrecision: 0,
 
-                                editorController
-                                    .selectedVideoIndex.value != null
-                                    ? SizedBox()
-                                    : CustomRulerTimelineOtherAssetsWidget1(
-                                  minValue: minValue,
-                                  maxValue: maxValue,
-                                  value: value,
-                                  majorTick: 10,
-                                  // Adjust as per your preference
-                                  minorTick: 1,
-                                  // Set to 1 for closer ticks
-                                  labelValuePrecision: 0,
-                                  tickValuePrecision: 0,
-                                  onChanged: (val) =>
-                                      setState(() {
+                                      onChanged: (val) => setState(() {
                                         value = val;
                                         actualValue = val.roundToDouble();
                                         print('Slider value: $value');
                                         print('Actual value: $actualValue');
                                       }),
-                                  activeColor: AppColor.primaryLightColor,
-                                  inactiveColor: AppColor.primaryLightColor
-                                      .withOpacity(0.2),
-                                  linearStep: true,
-                                  totalSeconds: ((maxValue - minValue) / 1)
-                                      .toInt() + 1,
-                                  // Adjust to cover the entire range
-                                  scrollController: _rulerScrollController,
-                                  maxPaddingValue: editorController.maxPaddingValue,
-                                  minPaddingValue: editorController.minPaddingValue,
+                                      activeColor: AppColor.primaryLightColor,
+                                      inactiveColor: AppColor.primaryLightColor
+                                          .withOpacity(0.2),
+                                      linearStep: true,
+                                      totalSeconds:
+                                          ((maxValue - minValue) / 1).toInt() +
+                                              1,
+                                      // Adjust to cover the entire range
+                                      scrollController: _rulerScrollController,
+                                      maxPaddingValue:
+                                          editorController.maxPaddingValue,
+                                      minPaddingValue:
+                                          editorController.minPaddingValue,
 
-                                  //
-                                  // listScrollController: editorController.selectedTextIndex.value != null
-                                  //     ? _listScrollControllerText
-                                  //     : editorController.selectedImageIndex.value != null
-                                  //     ? _listScrollControllerImage
-                                  //     : _listScrollControllerAudio,
-                                ),
+                                      //
+                                      // listScrollController: editorController.selectedTextIndex.value != null
+                                      //     ? _listScrollControllerText
+                                      //     : editorController.selectedImageIndex.value != null
+                                      //     ? _listScrollControllerImage
+                                      //     : _listScrollControllerAudio,
+                                    ),
 
+                              CustomDividerTilmelineWidget(),
+                              TimelineItemList(
+                                controller: _listScrollControllerVideo,
+                                itemCount:
+                                    editorController.editVideoDataList.length,
+                                totalItemCount: totalItemCount,
+                                color: Colors.purple,
+                                dataList: editorController.editVideoDataList,
+                                selectedIndex:
+                                    editorController.selectedVideoIndex,
+                              ),
+                              CustomDividerTilmelineWidget(),
+                              TimelineItemList(
+                                controller: _listScrollControllerImage,
+                                itemCount:
+                                    editorController.editImageDataList.length,
+                                totalItemCount: totalItemCount,
+                                color: Colors.orange,
+                                dataList: editorController.editImageDataList,
+                                selectedIndex:
+                                    editorController.selectedImageIndex,
+                              ),
+                              CustomDividerTilmelineWidget(),
+                              TimelineItemList(
+                                controller: _listScrollControllerAudio,
+                                itemCount:
+                                    editorController.editAudioDataList.length,
+                                totalItemCount: totalItemCount,
+                                color: Colors.red,
+                                dataList: editorController.editAudioDataList,
+                                selectedIndex:
+                                    editorController.selectedAudioIndex,
+                              ),
+                              CustomDividerTilmelineWidget(),
+                              TimelineItemList(
+                                controller: _listScrollControllerText,
+                                itemCount:
+                                    editorController.editTextDataList.length,
+                                totalItemCount: totalItemCount,
+                                color: Colors.green,
+                                dataList: editorController.editTextDataList,
+                                selectedIndex:
+                                    editorController.selectedTextIndex,
+                              ),
+                              CustomDividerTilmelineWidget(),
+                              SizedBox(
+                                height: 1.h,
+                              ),
+                              FittedBox(
+                                fit: BoxFit.fitWidth,
+                                child: SizedBox(
+                                  height: 30,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: SliderTheme(
+                                    data: const SliderThemeData(
+                                      overlayColor: Colors.transparent,
+                                      overlayShape: RoundSliderThumbShape(),
+                                      rangeTrackShape:
+                                          RectangularRangeSliderTrackShape(),
+                                      rangeThumbShape:
+                                          RoundRangeSliderThumbShape(
+                                              elevation: 0),
+                                      thumbColor: Colors.transparent,
+                                    ),
+                                    child: RangeSlider(
+                                      values: RangeValues(
+                                          editorController.minPaddingValue,
+                                          editorController.maxPaddingValue),
+                                      min: 10,
+                                      max: 80,
+                                      onChanged: (RangeValues values) {
+                                        setState(() {
+                                          if (values.start > 25) {
+                                            editorController.minPaddingValue =
+                                                25;
+                                          } else {
+                                            editorController.minPaddingValue =
+                                                values.start;
+                                          }
 
-                                Container(
-                                  color: Colors.grey.withOpacity(0.7),
-                                  height: 1,
-                                  width: double.infinity,
-                                ),
-                                Obx(
-                                      () =>
-                                      SizedBox(
-                                        height: h * 0.050,
-                                        child: ReorderableListView.builder(
-                                          scrollController: _listScrollControllerVideo,
-                                          itemCount: editorController
-                                              .editVideoDataList.length +
-                                              totalItemCount,
-                                          scrollDirection: Axis.horizontal,
-                                          itemBuilder: (context, index) {
-                                            if (index <
-                                                editorController.editVideoDataList
-                                                    .length) {
-                                              var model = editorController
-                                                  .editVideoDataList[index];
-                                              String name = editorController
-                                                  .editVideoDataList[index].name;
+                                          editorController.maxPaddingValue =
+                                              values.end;
 
-                                              return GestureDetector(
-                                                key: Key('$index'),
-                                                onTap: () {
-                                                  setState(() {
-                                                    editorController
-                                                        .selectedTextIndex.value =
-                                                    null;
-                                                    editorController
-                                                        .selectedVideoIndex.value =
-                                                        index;
-                                                    editorController
-                                                        .selectedImageIndex.value =
-                                                    null;
-                                                    editorController
-                                                        .selectedAudioIndex.value =
-                                                    null;
-                                                  });
-                                                },
-                                                child: TimeLineWidget(
-                                                  model: model,
-                                                  color: Colors.purple,
-                                                  name: name,
-                                                  removeItem: () {
-                                                    editorController
-                                                        .editVideoDataList.removeAt(
-                                                        index);
-                                                  },
-                                                  index: index,
-                                                ),
-                                              );
-                                            } else {
-                                              return Container(
-                                                key: ValueKey('transparent_$index'),
-                                                color: Colors.transparent,
-                                                height: 50,
-                                                width: itemWidth * itemWidth,
-                                              );
-                                            }
-                                          },
-                                          proxyDecorator: (child, index,
-                                              animation) =>
-                                              _proxyDecorator(
-                                                child, index, animation,
-                                                Colors.purple,
-                                                Colors.purple.shade300,),
-                                          onReorder: (int oldIndex, int newIndex) {
-                                            setState(() {
-                                              if (oldIndex < newIndex) {
-                                                newIndex -= 1;
-                                              }
-                                              final item = editorController
-                                                  .editVideoDataList.removeAt(
-                                                  oldIndex);
-                                              editorController.editVideoDataList
-                                                  .insert(newIndex, item);
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                ),
-                                // Obx(
-                                //       () =>
-                                //       SizedBox(
-                                //         height: h * 0.050,
-                                //         child: ReorderableListView.builder(
-                                //           scrollController: _listScrollControllerVideo,
-                                //
-                                //           itemCount:
-                                //           editorController.editVideoDataList.length,
-                                //           scrollDirection: Axis.horizontal,
-                                //           itemBuilder: (context, index) {
-                                //             var model =
-                                //             editorController.editVideoDataList[index];
-                                //             String name = editorController
-                                //                 .editVideoDataList[index].name;
-                                //             //   return TimeLineWidget(model: model, color: Colors.redAccent, name: name,);
-                                //
-                                //             return GestureDetector(
-                                //               key: Key('${index}'),
-                                //               onTap: () {
-                                //                 setState(() {
-                                //                   if (isSelected) {
-                                //                     // If already selected, do nothing
-                                //                     return;
-                                //                   } else {
-                                //                     editorController.selectedTextIndex
-                                //                         .value = null;
-                                //                     editorController.selectedVideoIndex
-                                //                         .value = index;
-                                //                     editorController.selectedImageIndex
-                                //                         .value = null;
-                                //                     editorController.selectedAudioIndex
-                                //                         .value = null;
-                                //                   }
-                                //                 }
-                                //
-                                //
-                                //                 );
-                                //
-                                //
-                                //
-                                //
-                                //
-                                //               },
-                                //               child: TimeLineWidget(
-                                //                 model: model,
-                                //                 color: Colors.purple,
-                                //                 name: name,
-                                //
-                                //                 removeItem: () {
-                                //                   editorController.editVideoDataList
-                                //                       .removeAt(index);
-                                //                 },
-                                //                 index: index,
-                                //               ),
-                                //             );
-                                //           },
-                                //           proxyDecorator: (child, index, animation) =>
-                                //               _proxyDecorator(child, index, animation,
-                                //                   Colors.purple, Colors.purple.shade300),
-                                //           onReorder: (int oldIndex, int newIndex) {
-                                //             setState(() {
-                                //               if (oldIndex < newIndex) {
-                                //                 newIndex -= 1;
-                                //               }
-                                //               final item = editorController
-                                //                   .editVideoDataList
-                                //                   .removeAt(oldIndex);
-                                //               editorController.editVideoDataList
-                                //                   .insert(newIndex, item);
-                                //             });
-                                //           },
-                                //         ),
-                                //       ),
-                                // ),
-
-
-                                Container(
-                                  color: Colors.grey.withOpacity(0.7),
-                                  height: 1,
-                                  width: double.infinity,
-                                ),
-                                Obx(
-                                      () =>
-                                      SizedBox(
-                                        height: h * 0.050,
-                                        child: ReorderableListView.builder(
-                                          itemCount:
-                                          editorController.editImageDataList
-                                              .length + totalItemCount,
-
-                                          scrollDirection: Axis.horizontal,
-                                          scrollController: _listScrollControllerImage,
-                                          itemBuilder: (context, index) {
-                                            //   return TimeLineWidget(model: model, color: Colors.redAccent, name: name,);
-
-                                            if (index <
-                                                editorController.editImageDataList
-                                                    .length) {
-                                              var model =
-                                              editorController
-                                                  .editImageDataList[index];
-                                              String name = editorController
-                                                  .editImageDataList[index].name;
-                                              return GestureDetector(
-                                                key: Key('${index}'),
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (isSelected) {
-                                                      // If already selected, do nothing
-                                                      return;
-                                                    } else {
-                                                      editorController
-                                                          .selectedTextIndex
-                                                          .value = null;
-                                                      editorController
-                                                          .selectedVideoIndex
-                                                          .value = null;
-                                                      editorController
-                                                          .selectedImageIndex
-                                                          .value = index;
-                                                      editorController
-                                                          .selectedAudioIndex
-                                                          .value = null;
-                                                    }
-                                                  }
-                                                  );
-                                                },
-                                                child: TimeLineWidget(
-                                                  model: model,
-                                                  color: Colors.orange,
-                                                  name: name,
-
-                                                  removeItem: () {
-                                                    editorController
-                                                        .editImageDataList
-                                                        .removeAt(index);
-                                                  },
-                                                  index: index,
-                                                ),
-                                              );
-                                            } else {
-                                              return Container(
-                                                key: ValueKey('transparent_$index'),
-                                                color: Colors.transparent,
-                                                height: 50,
-                                                width: itemWidth * itemWidth,
-                                              );
-                                            }
-                                          },
-                                          proxyDecorator: (child, index,
-                                              animation) =>
-                                              _proxyDecorator(
-                                                  child, index, animation,
-                                                  Colors.orange,
-                                                  Colors.orange.shade300),
-                                          onReorder: (int oldIndex, int newIndex) {
-                                            setState(() {
-                                              if (oldIndex < newIndex) {
-                                                newIndex -= 1;
-                                              }
-                                              final item = editorController
-                                                  .editImageDataList
-                                                  .removeAt(oldIndex);
-                                              editorController.editImageDataList
-                                                  .insert(newIndex, item);
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                ),
-                                Container(
-                                  color: Colors.grey.withOpacity(0.7),
-                                  height: 1,
-                                  width: double.infinity,
-                                ),
-                                Obx(
-                                      () =>
-                                      SizedBox(
-                                        height: h * 0.050,
-                                        child: ReorderableListView.builder(
-                                          itemCount:
-                                          editorController.editAudioDataList
-                                              .length + totalItemCount,
-
-                                          scrollDirection: Axis.horizontal,
-                                          scrollController: _listScrollControllerAudio,
-                                          itemBuilder: (context, index) {
-                                            //   return TimeLineWidget(model: model, color: Colors.redAccent, name: name,);
-                                            if (index <
-                                                editorController.editAudioDataList
-                                                    .length) {
-                                              var model =
-                                              editorController
-                                                  .editAudioDataList[index];
-                                              String name = editorController
-                                                  .editAudioDataList[index].name;
-                                              return GestureDetector(
-                                                key: Key('${index}'),
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (isSelected) {
-                                                      // If already selected, do nothing
-                                                      return;
-                                                    } else {
-                                                      editorController
-                                                          .selectedTextIndex
-                                                          .value = null;
-                                                      editorController
-                                                          .selectedVideoIndex
-                                                          .value = null;
-                                                      editorController
-                                                          .selectedImageIndex
-                                                          .value = null;
-                                                      editorController
-                                                          .selectedAudioIndex
-                                                          .value = index;
-                                                    }
-                                                  }
-                                                  );
-                                                },
-                                                child: TimeLineWidget(
-                                                  model: model,
-                                                  color: Colors.red,
-                                                  name: name,
-                                                  removeItem: () {
-                                                    editorController
-                                                        .editAudioDataList
-                                                        .removeAt(index);
-                                                  },
-                                                  index: index,
-                                                ),
-                                              );
-                                            } else {
-                                              return Container(
-                                                key: ValueKey('transparent_$index'),
-                                                color: Colors.transparent,
-                                                height: 50,
-                                                width: itemWidth * itemWidth,
-                                              );
-                                            }
-                                          },
-                                          proxyDecorator: (child, index,
-                                              animation) =>
-                                              _proxyDecorator(
-                                                  child, index, animation,
-                                                  Colors.red, Colors.red.shade300),
-                                          onReorder: (int oldIndex, int newIndex) {
-                                            setState(() {
-                                              if (oldIndex < newIndex) {
-                                                newIndex -= 1;
-                                              }
-                                              final item = editorController
-                                                  .editAudioDataList
-                                                  .removeAt(oldIndex);
-                                              editorController.editAudioDataList
-                                                  .insert(newIndex, item);
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                ),
-                                Container(
-                                  color: Colors.grey.withOpacity(0.7),
-                                  height: 1,
-                                  width: double.infinity,
-                                ),
-                                Obx(
-                                      () =>
-                                      SizedBox(
-                                        height: h * 0.050,
-                                        child: ReorderableListView.builder(
-
-                                          itemCount:
-                                          editorController.editTextDataList.length +
-                                              totalItemCount,
-
-                                          scrollDirection: Axis.horizontal,
-                                          scrollController: _listScrollControllerText,
-                                          itemBuilder: (context, index) {
-                                            if (index <
-                                                editorController.editTextDataList
-                                                    .length) {
-                                              var model =
-                                              editorController
-                                                  .editTextDataList[index];
-                                              String name = editorController
-                                                  .editTextDataList[index].name;
-                                              return GestureDetector(
-                                                key: Key('${index}'),
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (isSelected) {
-                                                      // If already selected, do nothing
-                                                      return;
-                                                    } else {
-                                                      editorController
-                                                          .selectedTextIndex
-                                                          .value = index;
-                                                      editorController
-                                                          .selectedVideoIndex
-                                                          .value = null;
-                                                      editorController
-                                                          .selectedImageIndex
-                                                          .value = null;
-                                                      editorController
-                                                          .selectedAudioIndex
-                                                          .value = null;
-                                                    }
-                                                  }
-
-                                                  );
-                                                },
-                                                child: TimeLineWidget(
-                                                  model: model,
-                                                  color: Colors.green,
-                                                  name: name,
-                                                  removeItem: () {
-                                                    editorController
-                                                        .editTextDataList
-                                                        .removeAt(index);
-                                                  },
-                                                  index: index,
-                                                ),
-                                              );
-                                            } else {
-                                              return Container(
-                                                key: ValueKey('transparent_$index'),
-                                                color: Colors.transparent,
-                                                height: 50,
-                                                width: itemWidth * itemWidth,
-                                              );
-                                            }
-                                          },
-                                          proxyDecorator: (child, index,
-                                              animation) =>
-                                              _proxyDecorator(
-                                                  child, index, animation,
-                                                  Colors.green,
-                                                  Colors.green.shade300),
-                                          onReorder: (int oldIndex, int newIndex) {
-                                            setState(() {
-                                              if (oldIndex < newIndex) {
-                                                newIndex -= 1;
-                                              }
-                                              final item = editorController
-                                                  .editTextDataList
-                                                  .removeAt(oldIndex);
-                                              editorController.editTextDataList
-                                                  .insert(newIndex, item);
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                ),
-                                Container(
-                                  color: Colors.grey.withOpacity(0.7),
-                                  height: 1,
-                                  width: double.infinity,
-                                ),
-
-                                SizedBox(
-                                  height: 1.h,
-                                ),
-                                FittedBox(
-                                  fit: BoxFit.fitWidth,
-                                  child: SizedBox(
-                                    height: 30,
-
-                                    width: MediaQuery
-                                        .of(context)
-                                        .size
-                                        .width,
-                                    child: SliderTheme(
-
-                                      data: const SliderThemeData(
-
-
-                                        overlayColor: Colors.transparent,
-                                        overlayShape: RoundSliderThumbShape(),
-                                        rangeTrackShape: RectangularRangeSliderTrackShape(
-
-                                        ),
-                                        rangeThumbShape: RoundRangeSliderThumbShape(
-                                            elevation: 0),
-                                        thumbColor: Colors.transparent,
-
-                                      ),
-                                      child: RangeSlider(
-                                        values: RangeValues(
-                                            editorController.minPaddingValue,
-                                            editorController.maxPaddingValue),
-                                        min: 10,
-                                        max: 80,
-                                        onChanged: (RangeValues values) {
-                                          setState(() {
-                                            if (values.start > 25) {
-                                              editorController.minPaddingValue = 25;
-                                            } else {
-                                              editorController.minPaddingValue =
-                                                  values.start;
-                                            }
-
+                                          if (editorController.maxPaddingValue <
+                                              30) {
                                             editorController.maxPaddingValue =
-                                                values.end;
+                                                30;
+                                          }
 
-                                            if (editorController.maxPaddingValue <
-                                                30) {
-                                              editorController.maxPaddingValue = 30;
-                                            }
-
-                                            print(values);
-                                          });
-                                        },
-                                      ),
-
+                                          print(values);
+                                        });
+                                      },
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-
-
                       SizedBox(height: h * 0.02),
-
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 18),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
                           children: [
                             IconButton(
                                 onPressed: () {
-                                  Get.to(ProfileScreen(), arguments: 'edit_screen');
+                                  Get.to(ProfileScreen(),
+                                      arguments: 'edit_screen');
                                 },
                                 icon: Icon(
                                   Icons.add,
                                   size: 27,
                                 )),
-
-
                             Obx(() {
                               List<ActionEditorModel>? currentActions;
                               if (editorController.selectedVideoIndex.value !=
                                   null) {
                                 currentActions = editorController.videoAction;
-                              } else if (editorController.selectedAudioIndex
-                                  .value != null) {
+                              } else if (editorController
+                                      .selectedAudioIndex.value !=
+                                  null) {
                                 currentActions = editorController.audioAction;
-                              } else if (editorController.selectedTextIndex.value !=
+                              } else if (editorController
+                                      .selectedTextIndex.value !=
                                   null) {
                                 currentActions = editorController.textAction;
                               }
 
                               return currentActions != null
                                   ? PopupMenuButton(
-                                color: Colors.grey.withOpacity(0.8),
-                                child: Icon(Icons.menu),
-                                itemBuilder: (context) {
-                                  return List.generate(
-                                      currentActions!.length, (index) {
-                                    var model = currentActions![index];
-                                    return PopupMenuItem(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Center(
-                                            child: Text('${model.nameItem}')),
-                                      ),
-                                      onTap: () {
-                                        model.onTap();
+                                      color: Colors.grey.withOpacity(0.8),
+                                      child: Icon(Icons.menu),
+                                      itemBuilder: (context) {
+                                        return List.generate(
+                                            currentActions!.length, (index) {
+                                          var model = currentActions![index];
+                                          return PopupMenuItem(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Center(
+                                                  child: Text(
+                                                      '${model.nameItem}')),
+                                            ),
+                                            onTap: () {
+                                              setState(() {});
+                                              model.onTap();
+                                            },
+                                          );
+                                        });
                                       },
-                                    );
-                                  });
-                                },
-                              )
+                                    )
                                   : SizedBox.shrink();
                             }),
-
-
                           ],
                         ),
                       ),
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
+                      GestureDetector(
+                        onTap: () {
+                          editorController.selectedTextIndex.value = null;
+                          editorController.selectedVideoIndex.value = null;
+                          editorController.selectedImageIndex.value = null;
+                          editorController.selectedAudioIndex.value = null;
+                          editorController.isTrimming=false;
+                          setState(() {});
 
-                          SizedBox(
-                              width: w,
-                              child: SvgPicture.asset(
-                                'assets/images/box_editor.svg',
-                                fit: BoxFit.cover,
-                              )),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 18),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                IconButton(
-                                    onPressed: () {
-                                      Get.back();
-                                    },
-                                    icon: Icon(
-                                      Icons.close,
-                                      size: 27,
-                                    )),
-
-
-                                IconButton(
-                                    onPressed: () {
-                                      editorController.exportOnline();
-                                    },
-                                    icon: Icon(Icons.done, size: 27)),
-                              ],
+                        },
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                                width: w,
+                                child: SvgPicture.asset(
+                                  'assets/images/box_editor.svg',
+                                  fit: BoxFit.cover,
+                                )),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 18),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                      onPressed: () {
+                                        Get.back();
+                                      },
+                                      icon: Icon(
+                                        Icons.close,
+                                        size: 27,
+                                      )),
+                                  IconButton(
+                                      onPressed: () {
+                                        editorController.exportOnline();
+                                      },
+                                      icon: Icon(Icons.done, size: 27)),
+                                ],
+                              ),
                             ),
-                          ),
 
-                          //secend :60 pixel:690 =>
-                        ],
+                            //secend :60 pixel:690 =>
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Positioned(
-                  bottom: 11.5.h,
-                  child:
 
-
-                  editorController.selectedVideoIndex.value != null ||
-                      editorController.selectedAudioIndex.value != null
-                      ? IconButton(
-                      onPressed: () {
-                        editorController.selectedTextIndex
-                            .value = null;
-                        editorController.selectedVideoIndex
-                            .value = null;
-                        editorController.selectedImageIndex
-                            .value = null;
-                        editorController.selectedAudioIndex
-                            .value = null;
-                        setState(() {
-
-                        });
-                      },
-                      icon:
-                      Icon(
-                        Icons.stop,
-                        size: 27,
+                            editorController.isTrimming == true
+                    ? GetBuilder<MediaSuitController>(
+                        builder: (controller) {
+                          return Positioned(
+                            bottom: 11.5.h,
+                            child: IconButton(
+                                onPressed: () {
+                                  if (editorController
+                                          .selectedAudioIndex.value !=
+                                      -1) {
+                                    // final model = editorController.editVideoDataList[editorController.selectedVideoIndex.value!];
+                                    // print('Start Trim: ${model.startTrim.round()}');
+                                    // print('End Trim: ${model.endTrim.round()}');
+                                    editorController.confirmAudioTrim();
+                                  } else {
+                                    print('No container is being trimmed');
+                                  }
+                                  if (editorController
+                                          .selectedVideoIndex.value !=
+                                      -1) {
+                                    // final model = editorController.editVideoDataList[editorController.selectedVideoIndex.value!];
+                                    // print('Start Trim: ${model.startTrim.round()}');
+                                    // print('End Trim: ${model.endTrim.round()}');
+                                    editorController.confirmVideoTrim();
+                                  } else {
+                                    print('No container is being trimmed');
+                                  }
+                                },
+                                icon: Image.asset(
+                                  'assets/icons/trim_timeline.png',
+                                  width: 25,
+                                  color: Colors.white,
+                                )),
+                          );
+                        },
                       )
-
-                  )
-                      : IconButton(onPressed: () {
-                    if (editorController.editVideoDataList.isNotEmpty ||
-                        editorController.editAudioDataList.isNotEmpty) {
-                      editorController.selectFirstMediaSelected();
-                    } else {
-
-                    }
-                    setState(() {});
-                  }, icon: BlinkingIcon(),),
-
-
-                ),
+                    : Positioned(
+                        bottom: 11.5.h,
+                        child: editorController.selectedVideoIndex.value !=
+                                    null ||
+                                editorController.selectedAudioIndex.value !=
+                                    null
+                            ? IconButton(
+                                onPressed: () {
+                                  editorController.selectedTextIndex.value =
+                                      null;
+                                  editorController.selectedVideoIndex.value =
+                                      null;
+                                  editorController.selectedImageIndex.value =
+                                      null;
+                                  editorController.selectedAudioIndex.value =
+                                      null;
+                                  editorController.isTrimming = false;
+                                  setState(() {});
+                                },
+                                icon: Icon(
+                                  Icons.stop,
+                                  size: 27,
+                                ))
+                            : IconButton(
+                                onPressed: () {
+                                  if (editorController
+                                          .editVideoDataList.isNotEmpty ||
+                                      editorController
+                                          .editAudioDataList.isNotEmpty) {
+                                    editorController.selectFirstMediaSelected();
+                                  } else {}
+                                  editorController.isTrimming = false;
+                                  setState(() {});
+                                },
+                                icon: BlinkingIcon(),
+                              ),
+                      ),
                 Positioned(
                     top: 5.h,
-                    child: Text('Editor', style: TextStyle(),)
-                ),
+                    child: Text(
+                      'Editor',
+                      style: TextStyle(),
+                    )),
                 BackWidget()
               ],
             ),
-            Obx(() {
-              return Visibility(
-                visible: editorController.isloadingSubmit.value,
-                child: SizedBox.expand(
-                  child: Container(
-                    color: Colors.black.withOpacity(0.4),
-                    child: Stack(
-                      children: [
-                        Align(
-                          child: Lottie.asset(
-                              "assets/json/Y8IBRQ38bK.json", height: 10.h),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }),
+            // Obx(() {
+            //   return Visibility(
+            //     visible: editorController.isloadingSubmit.value,
+            //     child: SizedBox.expand(
+            //       child: Container(
+            //         color: Colors.black.withOpacity(0.4),
+            //         child: Stack(
+            //           children: [
+            //             Align(
+            //               child: Lottie.asset("assets/json/Y8IBRQ38bK.json",
+            //                   height: 10.h),
+            //             )
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   );
+            // }),
             Obx(() {
               return Visibility(
                 visible: editorController.isloadingAssetConvert.value,
@@ -966,8 +564,8 @@ class _MediaSuitScreenState extends State<MediaSuitScreen> {
                     child: Stack(
                       children: [
                         Align(
-                          child: Lottie.asset(
-                              "assets/json/Y8IBRQ38bK.json", height: 10.h),
+                          child: Lottie.asset("assets/json/Y8IBRQ38bK.json",
+                              height: 10.h),
                         )
                       ],
                     ),
@@ -978,254 +576,132 @@ class _MediaSuitScreenState extends State<MediaSuitScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-
-class VideoPlayerEditor extends StatefulWidget {
-  final List<dynamic> videoUrls;
-
-  final ScrollController scrollController;
-
-  MediaSuitController mediaSuitController;
-
-  VideoPlayerEditor(
-      {Key? key, required this.videoUrls, required this.mediaSuitController, required this.scrollController })
-      : super(key: key);
-
-  @override
-  _VideoPlayerEditorState createState() => _VideoPlayerEditorState();
-}
-
-class _VideoPlayerEditorState extends State<VideoPlayerEditor> {
-  late ScrollSynchronizer scrollSynchronizer;
-
-
-  double _sliderValue = 0.0;
-  double actualValue = 0;
-  int _currentIndex = 0;
-  bool _isLoading = true;
-  late BuildContext _context;
-  bool isPlaying = false;
-  late VideoPlayerController controllerVideo;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _context = context;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-
-    _initializeVideo();
-  }
-
-  void _initializeVideo() async {
-    controllerVideo = VideoPlayerController.network(
-      widget.videoUrls[_currentIndex],
-    );
-
-    await controllerVideo.initialize();
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    controllerVideo.setVolume(0.0);
-    controllerVideo.play();
-    controllerVideo.addListener(_onVideoControllerUpdated);
-  }
-
-  void _onVideoControllerUpdated() {
-    setState(() {
-      _sliderValue = controllerVideo.value.position.inSeconds.toDouble();
-    });
-    if (controllerVideo.value.position == controllerVideo.value.duration) {
-      if (_currentIndex < widget.videoUrls.length - 1) {
-        _currentIndex++;
-        _showLoadingSnackbar();
-        controllerVideo = VideoPlayerController.network(
-          widget.videoUrls[_currentIndex],
-        )
-          ..initialize().then((_) {
-            setState(() {
-              isPlaying = true;
-              _sliderValue = 0.0;
-              ScaffoldMessenger.of(_context).hideCurrentSnackBar();
-            });
-            controllerVideo.play();
-            controllerVideo.addListener(_onVideoControllerUpdated);
-          });
-      }
-    }
-  }
-
-  void _showLoadingSnackbar() {
-    ScaffoldMessenger.of(_context).showSnackBar(
-      SnackBar(
-        content: Text('Loading...'),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    controllerVideo.dispose();
-    super.dispose();
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          isPlaying ? controllerVideo.pause() : controllerVideo.play();
-          isPlaying = !isPlaying;
-        });
+      onWillPop: () async {
+        return false;
       },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
+    );
+  }
 
-          _isLoading
-              ? Stack(
-            alignment: Alignment.center,
-            children: [
-              Opacity(
-                opacity: 0.2,
-                child: CustomRulerTimelineOtherAssetsWidget1(
-                  minValue: 0.0,
-                  maxValue: 300,
-                  value: 0,
-                  majorTick: 10,
+  Container CustomDividerTilmelineWidget() {
+    return Container(
+      color: Colors.grey.withOpacity(0.7),
+      height: 1,
+      width: double.infinity,
+    );
+  }
 
-                  minorTick: 1,
+  Widget _buildInfiniteScrollContainer() {
+    return Container(
+      key: const ValueKey('orange'),
+      width: 100000.0,
+      color: Colors.transparent,
+    );
+  }
 
-                  labelValuePrecision: 0,
-                  tickValuePrecision: 0,
-                  onChanged: (val) {
+  Widget TimelineItemList({
+    required ScrollController controller,
+    required int itemCount,
+    required int totalItemCount,
+    required Color color,
+    required RxList<EditDataModel> dataList,
+    dynamic selectedIndex,
+  }) {
+    return Obx(
+      () => GestureDetector(
+        onPanUpdate: (details) {
+          if (!Get.find<MediaSuitController>().isResizing) {
+            controller.jumpTo(
+              controller.offset - details.delta.dx * 2,
+            );
+          }
+        },
+        onPanEnd: (details) {
+          if (!Get.find<MediaSuitController>().isResizing) {
+            double velocity = details.velocity.pixelsPerSecond.dx;
+            double offset = controller.offset - velocity * 0.1;
 
+            double maxScrollExtent = controller.position.maxScrollExtent;
+            double minScrollExtent = controller.position.minScrollExtent;
+            if (offset < minScrollExtent) offset = minScrollExtent;
+            if (offset > maxScrollExtent) offset = maxScrollExtent;
+
+            controller.animateTo(
+              offset,
+              duration: Duration(milliseconds: 200),
+              curve: Curves.decelerate,
+            );
+          }
+        },
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.050,
+          child: ReorderableListView.builder(
+            scrollDirection: Axis.horizontal,
+            scrollController: controller,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: dataList.length + totalItemCount,
+            itemBuilder: (context, index) {
+              if (index < dataList.length) {
+                var model = dataList[index];
+                return GestureDetector(
+                  key: ValueKey('item_$index'),
+                  onTap: () {
+                    setState(() {
+                      selectedIndex.value = index;
+                    });
+                    Get.find<MediaSuitController>().isTrimming = false;
                   },
-
-                  activeColor: AppColor.primaryLightColor,
-                  inactiveColor: AppColor.primaryLightColor.withOpacity(0.2),
-                  linearStep: true,
-                  totalSeconds: 300,
-                  scrollController: widget.scrollController,
-                  minPaddingValue: widget.mediaSuitController.minPaddingValue,
-                  maxPaddingValue: widget.mediaSuitController.maxPaddingValue,
-                ),
-              ),
-              Transform.scale(
-                scale: 0.5,
-                child: Padding(
-                    padding: EdgeInsets.only(top: 30),
-                    child: CircularProgressIndicator(
-                      color: AppColor.primaryLightColor,)),
-              )
-            ],
-          )
-              : AspectRatio(
-            aspectRatio: 16 / 9,
-            child: VideoPlayer(controllerVideo,),
-          ),
-
-
-          !_isLoading
-              ? Listener(
-            onPointerMove: (event) {
+                  child: EditeBoxWidget(
+                    index: index,
+                    model: model,
+                    scrollController: controller,
+                    color: color,
+                    removeItem: () {
+                      dataList.removeAt(index);
+                    },
+                  ),
+                );
+              } else {
+                return _buildInfiniteScrollContainer();
+              }
+            },
+            proxyDecorator: (child, index, animation) => _proxyDecorator(
+                child, index, animation, color, color.withOpacity(0.5)),
+            onReorder: (int oldIndex, int newIndex) {
               setState(() {
-                _sliderValue =
-                    controllerVideo.value.position.inSeconds.toDouble();
+                if (oldIndex < newIndex) newIndex -= 1;
+                final item = dataList.removeAt(oldIndex);
+                dataList.insert(newIndex, item);
               });
             },
-            child: CustomRulerTimelineOtherAssetsWidget1(
-              maxPaddingValue: widget.mediaSuitController.maxPaddingValue,
-              minPaddingValue: widget.mediaSuitController.minPaddingValue,
-
-              minValue: 0.0,
-              maxValue: controllerVideo.value.duration.inSeconds.toDouble(),
-              value: _sliderValue,
-              majorTick: 10,
-
-              minorTick: 1,
-
-              labelValuePrecision: 0,
-
-              tickValuePrecision: 0,
-              onChanged: (val) {
-                setState(() {
-                  _sliderValue = val;
-                  actualValue = val.roundToDouble();
-                  print('Slider value: $_sliderValue');
-                  print('Actual value: $actualValue');
-                  controllerVideo.seekTo(Duration(seconds: val.toInt()));
-                });
-              },
-              activeColor: AppColor.primaryLightColor,
-              inactiveColor: AppColor.primaryLightColor.withOpacity(0.2),
-              linearStep: true,
-              totalSeconds: controllerVideo.value.duration.inSeconds.toInt() +
-                  1,
-              scrollController: widget.scrollController,
-            ),
-          )
-
-              : Container(),
-
-        ],
+          ),
+        ),
       ),
     );
   }
 
-}
-
-String formatDuration(Duration duration) {
-  String minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
-  String seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-  return '$minutes:$seconds';
-}
-
-
-class BlinkingIcon extends StatefulWidget {
-  @override
-  _BlinkingIconState createState() => _BlinkingIconState();
-}
-
-class _BlinkingIconState extends State<BlinkingIcon> {
-  double _opacity = 1.0;
-  Timer? _timer;
-  bool _isVisible = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _opacity = _isVisible ? 0.4 : 1.0;
-        _isVisible = !_isVisible;
-      });
-    });
-  }
-
   @override
   void dispose() {
-    _timer?.cancel();
+    _resizeTimer?.cancel();
     super.dispose();
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedOpacity(
-        opacity: _opacity,
-        duration: Duration(milliseconds: 900),
-        child: Icon(Icons.play_arrow)
-    );
-  }
 }
+
+Widget _proxyDecorator(Widget child, int index, Animation<double> animation,
+    Color color, Color shadowColor) {
+  return AnimatedBuilder(
+    animation: animation,
+    builder: (BuildContext context, Widget? child) {
+      final double animValue = Curves.easeInOut.transform(animation.value);
+      final double elevation = lerpDouble(0, 15, animValue)!;
+      return Material(
+        elevation: elevation,
+        color: color,
+        shadowColor: shadowColor,
+        child: child,
+      );
+    },
+    child: child,
+  );
+}
+
+

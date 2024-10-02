@@ -2,6 +2,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 extension FontWeightExtension on FontWeight {
   FontWeight get auto {
@@ -38,7 +39,7 @@ extension DarkMode on BuildContext {
 extension Loc on GetInterface {
   /// is dark mode currently enabled?
   bool get isLocEnglish {
-  
+
     return Get.locale!.languageCode.toString().contains("en");
   }
 }
@@ -57,6 +58,9 @@ extension EmailValidator on String {
 
 
 
-
-
+extension DateTimeFormatting on DateTime {
+  String toFormattedDateString() {
+    return DateFormat('yyyy/MM/dd  HH:MM').format(this);
+  }
+}
 

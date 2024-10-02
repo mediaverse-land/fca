@@ -3,11 +3,13 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:curl_logger_dio_interceptor/curl_logger_dio_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:mediaverse/app/common/utils/dio_inperactor.dart';
 import 'package:mediaverse/app/pages/plus_section/logic.dart';
 import 'package:mediaverse/app/pages/plus_section/widget/first_form.dart';
 import 'package:path_provider/path_provider.dart';
@@ -93,65 +95,61 @@ class LiveController extends GetxController{
   var isLoadingRecord = false.obs;
   var isSuccessRecord = false.obs;
 
-  void postTimeRecord(int channelId) async {
+  void postTimeRecord(String channelId) async {
     Get.back();
+
     try {
       isLoadingRecord.value = true;
 
       final token = GetStorage().read("token");
-      String apiUrl = 'https://api.mediaverse.land/v2/jobs/channel-record';
-      var response = await Dio().post(
+      String apiUrl = '${Constant.HTTP_HOST}tasks/channel-record';
+
+      Dio dio= Dio();
+      dio.interceptors.add(MediaVerseConvertInterceptor());
+      dio.interceptors.add(CurlLoggerDioInterceptor());//
+      print('LiveController.postTimeRecord 1');
+      var response = await dio.post(
         apiUrl,
         data: {
-          "channel": channelId,
+          "channel": channelId.toString(),
           "length": getTimeRecord(selectedIndex),
         },
         options: Options(
           headers: {
             'accept': 'application/json',
-            'Content-Type': 'application/json',
             'X-App': '_Android',
             'Accept-Language': 'en-US',
             'Authorization': 'Bearer $token',
           },
         ),
       );
+
       print("statusCode: ${response.statusCode}");
+
       if (response.statusCode == 200) {
-        print(response.data);
+        _showSnackbar('Success', "Recording...", Colors.green, Icons.fiber_smart_record_sharp);
         isSuccessRecord.value = true;
-        Get.snackbar('Success', "Recording...",
-            backgroundColor: Colors.green,
-            icon: Icon(Icons.fiber_smart_record_sharp));
       } else {
-        print("statusCode: ${response.statusCode}");
-        print("Response data: ${response.data}");
+        _showSnackbar('Error', "Try again!", Colors.red, Icons.info);
         isSuccessRecord.value = false;
-        Get.snackbar('Error', "Try again!",
-            backgroundColor: Colors.red,
-            icon: Icon(Icons.info));
       }
-    } on DioError catch (e) {
-      print("DioError: ${e.message}");
-      if (e.response != null) {
-        print("Response data: ${e.response?.data}");
-        print("Response headers: ${e.response?.headers}");
-      }
-      isSuccessRecord.value = false;
-      Get.snackbar('Error', "Try again!",
-          backgroundColor: Colors.yellow,
-          icon: Icon(Icons.info));
     } catch (e) {
-      print("Unexpected error: $e");
+      print("Error: $e");
       isSuccessRecord.value = false;
-      Get.snackbar('Error', "Try again!",
-          backgroundColor: Colors.yellow,
-          icon: Icon(Icons.info));
+      _showSnackbar('Error', "Try again!", Colors.yellow, Icons.info);
     } finally {
-      Future.delayed(Duration(seconds: getTimeRecord(selectedIndex))).then((value) {
-        isLoadingRecord.value = false;
-      });
+      await Future.delayed(Duration(seconds: getTimeRecord(selectedIndex)));
+      isLoadingRecord.value = false;
     }
+  }
+
+  void _showSnackbar(String title, String message, Color backgroundColor, IconData icon) {
+    Get.snackbar(
+      title,
+      message,
+      backgroundColor: backgroundColor,
+      icon: Icon(icon),
+    );
   }
 
 

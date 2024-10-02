@@ -38,6 +38,7 @@ class _YoutubeShareBottomSheetState extends State<YoutubeShareBottomSheet> {
     return GetBuilder<DetailController>(
         init: widget.detailController,
         builder: (logic) {
+          print('_YoutubeShareBottomSheetState.build = ${logic.externalAccountlist.length}');
           return SingleChildScrollView(
             child: Column(
               children: [
@@ -389,23 +390,26 @@ class _YoutubeShareBottomSheetState extends State<YoutubeShareBottomSheet> {
                 SizedBox(
                   height: 1.h,
                 ),
-                ...widget.detailController.externalAccountlist
-                    .where((element) => element.type.toString().contains("1"))
-                    .toList()
-                    .asMap()
-                    .entries
-                    .map((e) {
-                  var model = widget.detailController.externalAccountlist
-                      .elementAt(e.key);
-                  return CardChannelWidget2(
-                      title: (model.title ?? "").toString(),
-                      date: (model.createdAt ?? ""),
-                      isEnable: logic.enableChannel == e.key,
-                      onTap: () {
-                        logic.enableChannel = e.key;
-                        logic.update();
-                      });
-                }).toList(),
+                Column(
+                  children: widget.detailController.externalAccountlist
+                    //  .where((element) => element.type.toString().contains("1"))
+                      .toList()
+                      .asMap()
+                      .entries
+                      .map((e) {
+                    var model = widget.detailController.externalAccountlist
+                        .elementAt(e.key);
+
+                    return CardChannelWidget2(//
+                        title: (model.title ?? "").toString(),
+                        date: (model.createdAt ?? ""),
+                        isEnable: logic.enableChannel == e.key,
+                        onTap: () {
+                          logic.enableChannel = e.key;
+                          logic.update();
+                        });
+                  }).toList(),
+                ),
 
                 Padding(
                   padding: EdgeInsets.only(

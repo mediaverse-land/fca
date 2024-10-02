@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mediaverse/app/common/app_color.dart';
+import 'package:mediaverse/app/common/font_style.dart';
+import 'package:mediaverse/app/pages/login/widgets/custom_text_field.dart';
+import 'package:mediaverse/gen/model/json/FromJsonGetAllAsstes.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../common/app_color.dart';
-import '../../../common/font_style.dart';
 import '../../share_account/logic.dart';
 
 class AddChannelCardWidget extends StatefulWidget {
@@ -31,13 +33,14 @@ class _AddChannelCardWidgetState extends State<AddChannelCardWidget> {
         minWidth: double.infinity,
         onPressed: () {
 
-          _logic.showAccountType();
+         _logic.showAddProgramBottomSheet();
+         // _logic.sendRequestAddProgram();
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'channel_6'.tr,
+              'Add Porgram'.tr,
               style: FontStyleApp.bodyMedium.copyWith(
                 color: AppColor.grayLightColor.withOpacity(0.5),
               ),

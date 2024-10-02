@@ -55,7 +55,7 @@ dependencies:
   video_player: ^2.8.2
   url_launcher: any
   camera_camera: ^3.0.0
-  camera: any
+  camera: ^0.10.5+9
   audio_waveforms: ^1.0.4
   path_provider: any
   file_picker: any
@@ -64,13 +64,13 @@ dependencies:
   image_gallery_saver: ^2.0.3
   screenshot: ^2.1.0
   widget_zoom: ^0.0.3
+  ffmpeg_kit_flutter_min: ^5.1.0
   pinch_zoom: ^2.0.0
   app_links: ^3.5.0
   firebase_core: ^2.24.2
   firebase_messaging: ^14.7.10
   firebase_analytics: ^10.8.0
   path: ^1.8.2
-  ffmpeg_kit_flutter_min: ^5.1.0
   video_editor: ^3.0.0
   fraction: ^4.1.4
   chewie: any
@@ -82,6 +82,15 @@ dependencies:
   cached_network_image: ^3.3.1
   curl_logger_dio_interceptor: ^1.0.0
   sign_button: ^2.0.6
+  device_info_plus: ^9.1.2
+  firebase_auth: ^4.20.0
+  country_picker: ^2.0.26
+  rtmp_broadcaster: 2.2.6
+  wakelock: ^0.4.0
+  auto_size_text: ^3.0.0
+  share_plus: ^10.0.0
+  flu_wake_lock: ^0.0.2
+  keep_screen_on: ^3.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

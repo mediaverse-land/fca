@@ -1,10 +1,9 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:mediaverse/app/common/app_color.dart';
+import 'package:mediaverse/app/common/font_style.dart';
 import 'package:sizer/sizer.dart';
-
-import '../../../common/app_color.dart';
-import '../../../common/font_style.dart';
 
 Widget CardChannelWidget({required String title , required String date,bool isEnable =false,Function? onTap}){
   return Padding(

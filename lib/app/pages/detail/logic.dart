@@ -91,6 +91,7 @@ class DetailController extends GetxController {
 
 
   initFunction(){
+
     switch (index) {
       case 1:
         fetchTextData();
@@ -155,7 +156,7 @@ class DetailController extends GetxController {
         'Authorization': 'Bearer $token',
       }));
 
-     log('DetailController._fetchMediaData11111 = ${response.statusCode}  - ${jsonEncode(response.data)} - ${response.data['type']}');
+     log('DetailController._fetchMediaData11111 = ${response.statusCode}  - ${jsonEncode(response.data)} - ${response.data['media_type']}');
       if (response.statusCode == 200) {
         details?.value = RxMap<String, dynamic>.from(response.data['data']);
         detailss = RxMap<String, dynamic>.from(response.data['data']);
@@ -383,7 +384,7 @@ class DetailController extends GetxController {
       final token = GetStorage().read("token");
 
       String apiUrl =
-          '${Constant.HTTP_HOST}jobs/audio-translate-text';
+          '${Constant.HTTP_HOST}tasks/audio-translate-text';
       var s = Dio();
       s.interceptors.add(MediaVerseConvertInterceptor());
 
@@ -425,6 +426,7 @@ class DetailController extends GetxController {
           '${Constant.HTTP_HOST}jobs/audio-text';
       var s = Dio();
       s.interceptors.add(MediaVerseConvertInterceptor());
+      s.interceptors.add(CurlLoggerDioInterceptor());
 
       print('DetailController.soundConvertToText = ${fileIdMusic}');
       var response = await s.post(apiUrl, options: Options(headers: {
@@ -436,6 +438,7 @@ class DetailController extends GetxController {
         "file":fileIdMusic
       });
 
+      print('DetailController.soundConvertToText');
 
       if (response.statusCode == 200) {
 
@@ -479,7 +482,7 @@ class DetailController extends GetxController {
     try {
 
       String apiUrl =
-          '${Constant.HTTP_HOST}jobs/video-image';
+          '${Constant.HTTP_HOST}tasks/video-image';
       var response = await Dio().post(apiUrl, options: Options(headers: {
         'accept': 'application/json',
         'X-App': '_Android',
@@ -519,7 +522,7 @@ class DetailController extends GetxController {
       final token = GetStorage().read("token");
 
       String apiUrl =
-          '${Constant.HTTP_HOST}jobs/video-audio';
+          '${Constant.HTTP_HOST}tasks/video-audio';
       var response = await Dio().post(apiUrl, options: Options(headers: {
         'accept': 'application/json',
         'X-App': '_Android',
@@ -564,7 +567,7 @@ class DetailController extends GetxController {
       final token = GetStorage().read("token");
 
       String apiUrl =
-          '${Constant.HTTP_HOST}jobs/text-image';
+          '${Constant.HTTP_HOST}tasks/text-image';
       var s = Dio();
       s.interceptors.add(MediaVerseConvertInterceptor());
       var response = await s. post(apiUrl, options: Options(headers: {
@@ -607,7 +610,7 @@ class DetailController extends GetxController {
       final token = GetStorage().read("token");
 
       String apiUrl =
-          '${Constant.HTTP_HOST}jobs/text-audio';
+          '${Constant.HTTP_HOST}tasks/text-audio';
       var s = Dio();
       s.interceptors.add(MediaVerseConvertInterceptor());
       var response = await s. post(apiUrl, options: Options(headers: {
@@ -649,7 +652,7 @@ class DetailController extends GetxController {
       final token = GetStorage().read("token");
 
       String apiUrl =
-          '${Constant.HTTP_HOST}jobs/text-translate';
+          '${Constant.HTTP_HOST}tasks/text-translate';
       var s = Dio();
       s.interceptors.add(MediaVerseConvertInterceptor());
       var response = await s. post(apiUrl, options: Options(headers: {
@@ -692,7 +695,7 @@ class DetailController extends GetxController {
      final token = GetStorage().read("token");
 
      String apiUrl =
-         '${Constant.HTTP_HOST}jobs/text-text';
+         '${Constant.HTTP_HOST}tasks/text-text';
      var s = Dio();
      s.interceptors.add(MediaVerseConvertInterceptor());
      print('DetailController.textToText = ${
@@ -869,7 +872,7 @@ class DetailController extends GetxController {
         'Authorization': 'Bearer $token',
       }));
 
-      log('DetailController._fetchMediaData11111 = ${response.statusCode}  - ${jsonEncode(response.data)} - ${response.data['type']}');
+      log('DetailController._fetchMediaData11111 = ${response.statusCode}  - ${jsonEncode(response.data)} - ${response.data['media_type']}');
       if (response.statusCode! >= 200&&response.statusCode! <300) {
         isLoadingChannel(false);
         externalAccountlist = FromJsonGetExternalAccount.fromJson(response.data??[]).data??[];
@@ -878,6 +881,8 @@ class DetailController extends GetxController {
       } else {
         // Handle errors
       }
+      log('DetailController._fetchMediaData11111 = ${externalAccountlist.length}');
+
     } catch (e) {
       isLoadingChannel(false);
 
@@ -893,18 +898,19 @@ class DetailController extends GetxController {
   }
 
   void onSendYouTubeRequest(bool youtubeMode)async {
- //   debugger();
-    var body = {
+    Map<String,dynamic> body = {
       "file": file_id,
-      "account": externalAccountlist.where((element) => element.type.toString().contains("1")).elementAt(enableChannel).id.toString(),
+      "account": externalAccountlist.elementAt(enableChannel).id.toString(),
 
     };
+    print('DetailController.onSendYouTubeRequest = ${formatDateTime( isSeletedNow?DateTime.now():dateTime)}');
     if(!isSeletedNow){
       body["times"]= [
     formatDateTime( isSeletedNow?DateTime.now():dateTime)
-    ] as String;
+    ];
 
     }
+
     if(youtubeMode){
       body['title'] = titleEditingController.text;
       body['description'] = desEditingController.text;
@@ -920,7 +926,7 @@ class DetailController extends GetxController {
       print('DetailController._fetchMediaData = ${apiUrl}');
       var s = Dio();
      // s.interceptors.add(MediaVerseConvertInterceptor());
-    //  s.interceptors.add(CurlLoggerDioInterceptor());
+     s.interceptors.add(CurlLoggerDioInterceptor());
 
       var header =  {
         'accept': 'application/json',
@@ -930,7 +936,7 @@ class DetailController extends GetxController {
       };
       var response = await s.post(apiUrl, options: Options(headers:header),data: body);
 
-      log('DetailController._fetchMediaData11111 = ${response.statusCode}  - ${jsonEncode(response.data)} - ${response.data['type']}');
+      log('DetailController._fetchMediaData11111 = ${response.statusCode}  - ${jsonEncode(response.data)} - ${response.data['media_type']}');
       if (response.statusCode! >= 200&&response.statusCode! <300) {
        // externalAccountlist = FromJsonGetExternalAccount.fromJson(response.data??[]).data??[];
 

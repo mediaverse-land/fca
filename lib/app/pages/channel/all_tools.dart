@@ -2,12 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:mediaverse/app/common/app_route.dart';
+import 'package:mediaverse/app/pages/channel/control_room/view.dart';
 import 'package:mediaverse/app/pages/channel/view.dart';
 import 'package:mediaverse/app/pages/channel/widgets/all_tools_button.dart';
+import 'package:mediaverse/app/pages/media_suit/view.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../common/app_color.dart';
-import '../../common/app_route.dart';
+import '../stream/view.dart';
 
 class AllToolsScreen extends StatefulWidget {
   const AllToolsScreen({super.key});
@@ -31,7 +34,7 @@ class _AllToolsScreenState extends State<AllToolsScreen> {
 
 
               SizedBox(height: 5.h,),
-              AllToolsButtonWidget(onPressed: (){
+              AllToolsButtonWidget(onPressed: (){//
 
                 Get.to(ChannelScreen());
                   }, icon: "assets/icons/all_tools_1.svg", name: "channel_30".tr),
@@ -40,9 +43,15 @@ class _AllToolsScreenState extends State<AllToolsScreen> {
               //
               // }, icon: "assets/icons/all_tools_2.svg", name: "Control Room"),
               AllToolsButtonWidget(onPressed: (){
-                Get.toNamed(PageRoutes.MEDIASUIT);
+               Get.toNamed(PageRoutes.MEDIASUIT);
+                //Get.to(()=>CameraExampleHome());
 
               }, icon: "assets/icons/all_tools_3.svg", name: "channel_31".tr),
+              AllToolsButtonWidget(onPressed: (){
+               // Get.toNamed(PageRoutes.MEDIASUIT);
+                Get.to(()=>StreamHomePage(),arguments: [0]);
+
+              }, icon: "assets/icons/stream.svg", name: "channel_31_1".tr),
               // AllToolsButtonWidget(onPressed: (){},
               // icon: "assets/icons/all_tools_4.svg", name: "channel_32".tr,enable: false,),
               // AllToolsButtonWidget(onPressed: (){},

@@ -2,10 +2,12 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_instance/get_instance.dart';
+import 'package:mediaverse/app/common/app_color.dart';
+import 'package:mediaverse/app/common/font_style.dart';
+import 'package:mediaverse/app/pages/login/widgets/custom_text_field.dart';
+import 'package:mediaverse/gen/model/json/FromJsonGetAllAsstes.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../common/app_color.dart';
-import '../../../common/font_style.dart';
 import '../../share_account/logic.dart';
 
 class AddChannelCalanderCardWidget extends StatefulWidget {

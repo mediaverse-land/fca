@@ -54,7 +54,6 @@ class PlusSectionLogic extends GetxController implements RequestInterface {
   String textOutPut = "";
   List<CountriesModel> countreisModel =[];
   List<String> countreisString =[];
-
   double uploadedCount = 0.0;
 
   var isRecordingTimeVisible = false.obs;
@@ -584,7 +583,7 @@ class PlusSectionLogic extends GetxController implements RequestInterface {
     var body = {
       "name": titleController.text,
       "user": box.read("userid"),
-      "plan": _getPlanByDropDown(),
+      "license_type": _getPlanByDropDown(),
       "subscription_period": getSubscrptioonPeriod(),
       "description": captionController.text,
       "lat": 0,
@@ -592,7 +591,7 @@ class PlusSectionLogic extends GetxController implements RequestInterface {
       "type": 1,
       "genre": genreController.text,
       "length": "10",
-      "language": Constant.languageMap[languageController.text],
+      //"language": Constant.languageMap[languageController.text],
       "country":countreisModel.firstWhere((element) => element.title.toString().contains(languageController.text)).iso??"",
       "forkability_status":
           editibaleController.text.contains("Yes") ? "1" : "2",
@@ -696,7 +695,7 @@ class PlusSectionLogic extends GetxController implements RequestInterface {
           filename: 'uploadfile'),
       'asset': assetid.toString(),
     });
-   print('PlusSectionLogic.uploadFileWithDio = ${imageOutPut} - ${formData}');
+   print('PlusSectionLogic.uploadFileWithDio = ${imageOutPut} - ${formData.fields}');
 
    dio.interceptors.add(MediaVerseConvertInterceptor());
 
@@ -738,11 +737,14 @@ class PlusSectionLogic extends GetxController implements RequestInterface {
   Future<void> getAllCountries() async {
     var dio = Dio();
 
-    dio.interceptors.add(MediaVerseConvertInterceptor());
 
+  //  debugger();
+   dio.interceptors.add(MediaVerseConvertInterceptor());
+
+    print('PlusSectionLogic.getAllCountries = ${Constant.HTTP_HOST}Languages');
     try {
       var response = await dio.get(
-        '${Constant.HTTP_HOST}languages',
+        '${Constant.HTTP_HOST}countries',
         options: Options(
           headers: {
             'Authorization': 'Bearer ${GetStorage().read("token")}',
@@ -750,38 +752,28 @@ class PlusSectionLogic extends GetxController implements RequestInterface {
             'X-App': '_Android',
           },
         ),
+
       );
 
-      print('=========================================================');
-      print(response.data);
-      print('=========================================================');
+   //   debugger();
+      if (response.statusCode! >= 200||response.statusCode! < 300) {
 
-      if (response.statusCode! >= 200 && response.statusCode! < 300) {
-        Map<String, dynamic> data = response.data;
 
-        // Clear the existing lists before updating
-        countreisModel.clear();
-        countreisString.clear();
 
-        data.forEach((key, value) {
-          countreisModel.add(CountriesModel.fromJson({"code": key, "title": value}));
+        (response.data['data'] as List<dynamic>).forEach((element) {
+          countreisModel.add(CountriesModel.fromJson(element));
         });
-
-        countreisModel.forEach((element) {
-          countreisString.add(element.title ?? "");
+        (countreisModel).forEach((element) {
+          countreisString.add(element.title??"");
         });
-
         print('PlusSectionLogic.getAllCountries = ${countreisModel.length}');
       } else {
-        print('Failed to fetch data: ${response.statusMessage}');
+        print('Failed to upload file: ${response.statusMessage}');
       }
     } on DioError catch (e) {
       print('DioError: ${e.message}');
-    } catch (e) {
-      print('Unexpected error: $e');
     }
   }
-
 
   String _getFilePathFromMediaEnum() {
     switch (mediaMode) {

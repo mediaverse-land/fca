@@ -65,6 +65,6 @@ class DefaultFirebaseOptions {
     storageBucket: 'argon-depot-370512.appspot.com',
     androidClientId: '56751096814-9h8hm3kf665l2v0fusq69l8gl81s2nr0.apps.googleusercontent.com',
     iosClientId: '56751096814-3tfkjmp1oubdli5ei5ueaqo5d9hnmnle.apps.googleusercontent.com',
-    iosBundleId: 'com.emahdi1297.mediaverse',
+    iosBundleId: 'com.app.mediaverse',
   );
 }

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mediaverse/gen/model/json/FromJsonGetLogins.dart';
-import 'package:mediaverse/gen/model/json/FromJsonGetSessions.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../common/app_color.dart';

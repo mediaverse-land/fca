@@ -56,7 +56,7 @@ class DetailMusicScreen extends StatelessWidget {
                 controller.musicDetails!.containsKey('asset') &&
                 controller.musicDetails!['asset'] != null &&
                 controller.musicDetails!['asset'].containsKey('plan')) {
-              int plan = controller.musicDetails!['asset']['plan'];
+              int plan = controller.musicDetails!['asset']['license_type'];
               print(plan);
               if (plan == 1) {
                 return SizedBox();
@@ -194,7 +194,7 @@ class DetailMusicScreen extends StatelessWidget {
                                           height: 1.h,
                                         ),
                                         Text(
-                                          '${controller.musicDetails?['name']}',
+                                          '${controller.musicDetails?['media']['name']}',
                                           style: Theme
                                   .of(context)
                                   .textTheme.bodySmall?.copyWith(
@@ -211,9 +211,18 @@ class DetailMusicScreen extends StatelessWidget {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              CircleAvatar(
-                                                radius: 3.w,
-                                              ),
+                                          Container(
+
+                                          child:controller.musicDetails!['user']['image_url'] == null? CircleAvatar(
+                                          backgroundColor:
+                                          AppColor.primaryLightColor,
+                                          ):CircleAvatar(
+                                          backgroundColor: AppColor.blueDarkColor,
+                                            backgroundImage:
+                                            NetworkImage(controller.musicDetails!['user']['image_url']),
+                                          ),
+                                          width: 5.w,
+                                        ),
                                               SizedBox(
                                                 width: 2.w,
                                               ),
@@ -280,7 +289,7 @@ class DetailMusicScreen extends StatelessWidget {
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 2.w),
                                   child: Text(
-                                      '${controller.musicDetails?['description'] ?? ''}',
+                                      '${controller.musicDetails?['media']['description'] ?? ''}',
                                       style: Theme
                                   .of(context)
                                   .textTheme.bodySmall?.copyWith(
@@ -328,8 +337,10 @@ class DetailMusicScreen extends StatelessWidget {
                                     ),
                                     GestureDetector(
                                       onTap: (){
-                                        Get.find<MediaSuitController>().setDataEditAudio(controller.musicDetails?['name'] ?? '' , controller.musicDetails?['name'] , controller.musicDetails!['file_id'].toString());
+                                       var audioLength = controller.musicDetails?['file']['time'] ?? 5.0;
+                                        Get.find<MediaSuitController>().setDataEditAudio(controller.musicDetails?['media']['name']?? '' , controller.musicDetails?['file']['url'] , controller.musicDetails!['file_id'].toString() ,time: double.parse(audioLength));
                                         Get.toNamed(PageRoutes.MEDIASUIT);
+                                        // print(audioLength);
                                       },
                                       child:  Icon(Icons.edit),
                                     )
@@ -357,7 +368,7 @@ class DetailMusicScreen extends StatelessWidget {
                                   builder: (context) {
                                     if (controller.musicDetails != null &&
                                         controller.musicDetails!['asset'] != null &&
-                                        controller.musicDetails!['asset']['plan'] ==
+                                        controller.musicDetails!['asset']['license_type'] ==
                                             1) {
                                       return Container(
                                           height: 15.5.h,
@@ -473,7 +484,7 @@ class DetailMusicScreen extends StatelessWidget {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    int itemId = controller.musicDetails?['asset_id'];
+                                    String itemId = controller.musicDetails?['asset_id'];
                                     print(itemId);
                                     Get.toNamed(PageRoutes.COMMENT,
                                         arguments: {'id': itemId,"logic":controller});
@@ -500,7 +511,7 @@ class DetailMusicScreen extends StatelessWidget {
                       ),
                     );
                   }),
-                  BackWidget()
+                  BackWidget(idAssetMedia: Get.arguments['idAssetMedia'] == "idAssetMedia",)
 
                 ],
               );

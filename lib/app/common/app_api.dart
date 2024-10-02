@@ -92,7 +92,7 @@ class ApiRequster {
 
     gt.Dio dio = gt.Dio(gt.BaseOptions(headers: headers,));
     dio.interceptors.add(MediaVerseInterceptor(_requestInterface,reqCode));
-    if(develperModel)dio.interceptors.add(CurlLoggerDioInterceptor());
+    dio.interceptors.add(CurlLoggerDioInterceptor());
     if (!kIsWeb) {
       (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
           (IO.HttpClient client) {

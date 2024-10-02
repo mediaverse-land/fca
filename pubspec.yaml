@@ -62,7 +62,6 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   google_sign_in: any
   image_gallery_saver: ^2.0.3
-  screenshot: ^2.1.0
   widget_zoom: ^0.0.3
   ffmpeg_kit_flutter_min: ^5.1.0
   pinch_zoom: ^2.0.0
@@ -91,6 +90,9 @@ dependencies:
   share_plus: ^10.0.0
   flu_wake_lock: ^0.0.2
   keep_screen_on: ^3.0.0
+  win32: ^5.5.4
+  screenshot: ^3.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -31,6 +31,10 @@ configurations.all {
     resolutionStrategy {
         force 'com.github.pedroSG94.rtmp-rtsp-stream-client-java:encoder:1.9.6'
     }
+    resolutionStrategy {
+        force 'androidx.core:core:1.6.0'
+        force 'androidx.core:core-ktx:1.6.0'
+    }
 }
 android {
     namespace "com.emahdi1297.mediaverse"

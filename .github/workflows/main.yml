@@ -1,0 +1,74 @@
+name: Build APK MediaVerse
+
+on:
+  repository_dispatch:
+    types: [build_apk]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v3
+
+      # Setup Flutter environment
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      # Clean up project and cache
+      - name: Clean Flutter cache
+        run: flutter pub cache clean
+
+      # Clean build files
+      - name: Clean project
+        run: flutter clean
+
+      # Get dependencies
+      - name: Get dependencies
+        run: flutter pub get
+
+      # Build APK
+      - name: Build APK
+        run: flutter build apk --release --split-per-abi
+
+      # Decode keystore
+      - name: Decode keystore
+        env:
+          KEYSTORE_FILE_BASE64: ${{ secrets.KEYSTORE_FILE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_FILE_BASE64" | base64 --decode > android/app/keystore.jks
+
+      # Sign APK
+      - name: Sign APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          for APK in build/app/outputs/apk/release/*.apk; do
+            jarsigner -verbose -keystore android/app/keystore.jks \
+              -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
+              "$APK" "$KEY_ALIAS"
+          done
+
+      # Align APK
+      - name: Zipalign APK
+        run: |
+          for APK in build/app/outputs/apk/release/*.apk; do
+            zipalign -v 4 "$APK" "$APK-aligned.apk"
+            mv "$APK-aligned.apk" "$APK"
+          done
+
+      # Send APK to Telegram
+      - name: Send APK to Telegram
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          for APK in build/app/outputs/apk/release/*.apk; do
+            curl -F chat_id=$TELEGRAM_CHAT_ID -F document=@"$APK" -F caption="Toping APK" https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
+          done
+

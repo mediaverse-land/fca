@@ -27,6 +27,12 @@ jobs:
           target: default
           arch: x86_64
           ndk: true
+      # Install Android build-tools including zipalign
+      - name: Install Android build-tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y android-sdk build-essential
+          sdkmanager "build-tools;30.0.3"
 
       # Clean Flutter cache
       - name: Clean Flutter cache

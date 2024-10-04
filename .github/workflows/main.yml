@@ -19,6 +19,15 @@ jobs:
           flutter-version: 3.22.0
 
 
+      # Setup Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          api-level: 34
+          target: default
+          arch: x86_64
+          ndk: true
+
       # Clean Flutter cache
       - name: Clean Flutter cache
         run: flutter pub cache clean

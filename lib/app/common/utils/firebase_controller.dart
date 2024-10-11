@@ -167,12 +167,18 @@ class FirebaseController extends GetxController implements RequestInterface {
 
   static void  sendToAssetPage(String s) {
     print('FirebaseController.sendToAssetPage = ${s}');
-    // debugger();
     try {
       var json = jsonDecode(s);
-      print('FirebaseController.sendToAssetPage 2  = ${json}');
+      var json2 = json['result'].toString();
+      print('FirebaseController.sendToAssetPage 2 1   = ${json}');
+      print('FirebaseController.sendToAssetPage 2 2  =  ${json2.substring(json2.indexOf("media_type")+12,json2.indexOf("asset_id")-2)}');
+      print('FirebaseController.sendToAssetPage 2 3  = ${jsonDecode(json['result'])['media_type'].toString()} - ${json['result'].toString()}');
+      print('FirebaseController.sendToAssetPage 3');
+
       String route = PageRoutes.DETAILIMAGE;
-      switch (json['class'].toString()) {
+      print('FirebaseController.sendToAssetPage 3');
+
+      switch (jsonDecode(json['result'])['media_type'].toString()) {
         case "1":
           route = PageRoutes.DETAILTEXT;
         case "2":
@@ -182,7 +188,7 @@ class FirebaseController extends GetxController implements RequestInterface {
         case "4":
           route = PageRoutes.DETAILVIDEO;
       }
-      var id = json['id'];
+      var id = jsonDecode(json['result'])['id'].toString();
       Get.toNamed(route, arguments: {'id': id}, preventDuplicates: false);
     } catch (e) {
       // TODO

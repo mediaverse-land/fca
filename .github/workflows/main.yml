@@ -73,9 +73,12 @@ jobs:
         uses: android-actions/setup-android@v2
         with:
           api-level: 34
-          target: default
-          arch: x86_64
-          ndk: true
+      - name: Install Android cmdline-tools
+        run: |
+          sudo mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+          curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
+          unzip sdk-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
+
 
       # نصب ابزارهای ساخت Android شامل zipalign
       - name: Install Android build-tools (if cache is missing)

@@ -8,89 +8,84 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      FLUTTER_HOME: $HOME/flutter
-      ANDROID_SDK_ROOT: $HOME/Android/Sdk
-
     steps:
       - uses: actions/checkout@v3
 
-      # کش Flutter SDK
+      # Cache Flutter SDK
       - name: Cache Flutter SDK
         uses: actions/cache@v3
         with:
-          path: ${{ env.FLUTTER_HOME }}
-          key: flutter-sdk-${{ runner.os }}-v3.22.0
+          path: ~/.flutter
+          key: flutter-sdk-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
           restore-keys: |
             flutter-sdk-${{ runner.os }}-
 
-      # کش Android SDK
-      - name: Cache Android SDK
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.ANDROID_SDK_ROOT }}
-          key: android-sdk-${{ runner.os }}-api34
-          restore-keys: |
-            android-sdk-${{ runner.os }}-
-
-      # کش Gradle
-      - name: Cache Gradle
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle
-          key: gradle-${{ runner.os }}-v7.5.1
-          restore-keys: |
-            gradle-${{ runner.os }}-
-
-      # کش وابستگی‌های Flutter (Pub)
-      - name: Cache Flutter pub dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.pub-cache
-          key: pub-cache-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            pub-cache-${{ runner.os }}-
-
-      # کش Android build-tools
-      - name: Cache Android build-tools
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.ANDROID_SDK_ROOT }}/build-tools
-          key: android-build-tools-${{ runner.os }}-30.0.3
-          restore-keys: |
-            android-build-tools-${{ runner.os }}-
-
-      # تنظیم محیط Flutter
+      # Setup Flutter environment
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           flutter-version: 3.22.0
 
-      # تنظیم Android SDK
+      # Cache Android SDK
+      - name: Cache Android SDK
+        uses: actions/cache@v3
+        with:
+          path: ~/.android
+          key: android-sdk-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            android-sdk-${{ runner.os }}-
+
+      # Setup Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
         with:
           api-level: 34
-      - name: Install Android cmdline-tools
-        run: |
-          sudo mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
-          curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip
-          unzip sdk-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
+          target: default
+          arch: x86_64
+          ndk: true
 
+      # Cache Gradle
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle
+          key: gradle-${{ runner.os }}-${{ hashFiles('android/build.gradle') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
-      # نصب ابزارهای ساخت Android شامل zipalign
-      - name: Install Android build-tools (if cache is missing)
-        if: steps.cache-build-tools.outputs.cache-hit != 'true'
+      # Cache Flutter build files
+      - name: Cache Flutter build files
+        uses: actions/cache@v3
+        with:
+          path: build/
+          key: flutter-build-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            flutter-build-${{ runner.os }}-
+
+      # Cache Flutter pub dependencies
+      - name: Cache Flutter pub dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            pubspec.lock
+          key: pub-cache-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-cache-${{ runner.os }}-
+
+      # Install Android build-tools including zipalign
+      - name: Install Android build-tools
         run: |
+          sudo apt-get update
+          sudo apt-get install -y android-sdk build-essential
           sdkmanager "build-tools;30.0.3"
 
-      # دریافت وابستگی‌ها
+      # Get dependencies (skip cleaning cache to reuse cached files)
       - name: Get dependencies
         run: flutter pub get
 
-      # ساخت APK یا AAB بر اساس نوع رویداد
+      # Build based on event type (APK or AAB)
       - name: Build APK or AAB
         run: |
           if [ "${{ github.event.action }}" == "build_apk" ]; then
@@ -99,14 +94,14 @@ jobs:
             flutter build appbundle --release
           fi
 
-      # رمزگشایی keystore
+      # Decode keystore
       - name: Decode keystore
         env:
           KEYSTORE_FILE_BASE64: ${{ secrets.KEYSTORE_FILE_BASE64 }}
         run: |
           echo "$KEYSTORE_FILE_BASE64" | base64 --decode > android/app/keystore.jks
 
-      # امضای APK یا AAB
+      # Sign APK or AAB
       - name: Sign APK or AAB
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -121,7 +116,7 @@ jobs:
             jarsigner -verbose -keystore android/app/keystore.jks -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" build/app/outputs/bundle/release/app-release.aab "$KEY_ALIAS"
           fi
 
-      # هماهنگ‌سازی APK
+      # Align APK
       - name: Zipalign APK (if APK is built)
         if: github.event.action == 'build_apk'
         run: |
@@ -130,7 +125,7 @@ jobs:
             mv "$APK-aligned.apk" "$APK"
           done
 
-      # ارسال APK یا AAB به تلگرام
+      # Send APK or AAB to Telegram
       - name: Send APK or AAB to Telegram
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}

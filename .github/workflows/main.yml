@@ -27,16 +27,14 @@ jobs:
           channel: 'stable'
           flutter-version: 3.22.0
 
-
-      # Cache Android SDK in home directory
-      - name: Cache Android SDK platforms
+      # Cache Android SDK
+      - name: Cache Android SDK
         uses: actions/cache@v3
         with:
-          path: /usr/local/lib/android/sdk/platforms
-          key: android-sdk-platforms-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
+          path: ~/.android
+          key: android-sdk-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
           restore-keys: |
-            android-sdk-platforms-${{ runner.os }}-
-            
+            android-sdk-${{ runner.os }}-
 
       # Setup Android SDK
       - name: Setup Android SDK
@@ -46,9 +44,6 @@ jobs:
           target: default
           arch: x86_64
           ndk: true
-      # Fix permissions for Android SDK
-      - name: Fix Android SDK permissions
-        run: sudo chmod -R a+rwx /usr/local/lib/android/sdk
 
       # Cache Gradle
       - name: Cache Gradle

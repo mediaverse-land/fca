@@ -29,20 +29,20 @@ jobs:
 
 
       # Cache Android SDK in home directory
-      - name: Cache Android SDK
+      - name: Cache Android SDK platforms
         uses: actions/cache@v3
         with:
-          path: ~/.android-sdk
-          key: android-sdk-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
+          path: /usr/local/lib/android/sdk/platforms
+          key: android-sdk-platforms-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
           restore-keys: |
-            android-sdk-${{ runner.os }}-
+            android-sdk-platforms-${{ runner.os }}-
+            
 
       # Setup Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
         with:
           api-level: 34
-          sdk-root: ~/.android-sdk
           target: default
           arch: x86_64
           ndk: true

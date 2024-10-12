@@ -27,11 +27,12 @@ jobs:
           channel: 'stable'
           flutter-version: 3.22.0
 
-      # Cache Android SDK
+
+      # Cache Android SDK in home directory
       - name: Cache Android SDK
         uses: actions/cache@v3
         with:
-          path: /usr/local/lib/android/sdk
+          path: ~/.android-sdk
           key: android-sdk-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
           restore-keys: |
             android-sdk-${{ runner.os }}-
@@ -41,6 +42,7 @@ jobs:
         uses: android-actions/setup-android@v2
         with:
           api-level: 34
+          sdk-root: ~/.android-sdk
           target: default
           arch: x86_64
           ndk: true

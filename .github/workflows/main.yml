@@ -11,6 +11,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # Send initial status to Telegram
+      - name: Send status: Starting build
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: Starting build..."
+
       # Cache Flutter SDK
       - name: Cache Flutter SDK
         uses: actions/cache@v3
@@ -20,12 +28,28 @@ jobs:
           restore-keys: |
             flutter-sdk-${{ runner.os }}-
 
+      # Send status: Flutter SDK cached
+      - name: Send status: Flutter SDK cached
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: Flutter SDK cached."
+
       # Setup Flutter environment
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           flutter-version: 3.22.0
+
+      # Send status: Flutter setup complete
+      - name: Send status: Flutter setup complete
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: Flutter setup complete."
 
       # Cache Android SDK
       - name: Cache Android SDK
@@ -36,6 +60,14 @@ jobs:
           restore-keys: |
             android-sdk-${{ runner.os }}-
 
+      # Send status: Android SDK cached
+      - name: Send status: Android SDK cached
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: Android SDK cached."
+
       # Setup Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
@@ -44,6 +76,14 @@ jobs:
           target: default
           arch: x86_64
           ndk: true
+
+      # Send status: Android SDK setup complete
+      - name: Send status: Android SDK setup complete
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: Android SDK setup complete."
 
       # Cache Gradle
       - name: Cache Gradle
@@ -54,6 +94,14 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
+      # Send status: Gradle cached
+      - name: Send status: Gradle cached
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: Gradle cached."
+
       # Cache Flutter build files
       - name: Cache Flutter build files
         uses: actions/cache@v3
@@ -62,6 +110,14 @@ jobs:
           key: flutter-build-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
           restore-keys: |
             flutter-build-${{ runner.os }}-
+
+      # Send status: Flutter build files cached
+      - name: Send status: Flutter build files cached
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: Flutter build files cached."
 
       # Cache Flutter pub dependencies
       - name: Cache Flutter pub dependencies
@@ -74,6 +130,14 @@ jobs:
           restore-keys: |
             pub-cache-${{ runner.os }}-
 
+      # Send status: Flutter pub dependencies cached
+      - name: Send status: Flutter pub dependencies cached
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: Flutter pub dependencies cached."
+
       # Install Android build-tools including zipalign
       - name: Install Android build-tools
         run: |
@@ -81,9 +145,25 @@ jobs:
           sudo apt-get install -y android-sdk build-essential
           sdkmanager "build-tools;30.0.3"
 
+      # Send status: Android build-tools installed
+      - name: Send status: Android build-tools installed
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: Android build-tools installed."
+
       # Get dependencies (skip cleaning cache to reuse cached files)
       - name: Get dependencies
         run: flutter pub get
+
+      # Send status: Dependencies installed
+      - name: Send status: Dependencies installed
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: Dependencies installed."
 
       # Build based on event type (APK or AAB)
       - name: Build APK or AAB
@@ -93,6 +173,14 @@ jobs:
           elif [ "${{ github.event.action }}" == "build_aab" ]; then
             flutter build appbundle --release
           fi
+
+      # Send status: Build complete
+      - name: Send status: Build complete
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: Build complete. Signing APK/AAB..."
 
       # Decode keystore
       - name: Decode keystore
@@ -116,6 +204,14 @@ jobs:
             jarsigner -verbose -keystore android/app/keystore.jks -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" build/app/outputs/bundle/release/app-release.aab "$KEY_ALIAS"
           fi
 
+      # Send status: APK/AAB signed
+      - name: Send status: APK/AAB signed
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: APK/AAB signed. Performing alignment..."
+
       # Align APK
       - name: Zipalign APK (if APK is built)
         if: github.event.action == 'build_apk'
@@ -124,6 +220,15 @@ jobs:
             zipalign -v 4 "$APK" "$APK-aligned.apk"
             mv "$APK-aligned.apk" "$APK"
           done
+
+      # Send status: APK aligned
+      - name: Send status: APK aligned
+        if: github.event.action == 'build_apk'
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: APK aligned."
 
       # Send APK or AAB to Telegram
       - name: Send APK or AAB to Telegram
@@ -138,4 +243,11 @@ jobs:
             done
           elif [ "${{ github.event.action }}" == "build_aab" ]; then
             curl -F chat_id=$CHAT_ID -F document=@"build/app/outputs/bundle/release/app-release.aab" -F caption="MediaVerse AAB" https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
-          fi
+
+      # Send status: APK/AAB uploaded
+      - name: Send status: APK/AAB uploaded
+        run: |
+          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/editMessageText \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d message_id=${{ github.event.client_payload.message_id }} \
+          -d text="Status: APK/AAB uploaded successfully!"

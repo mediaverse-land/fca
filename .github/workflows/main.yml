@@ -139,9 +139,6 @@
 #           elif [ "${{ github.event.action }}" == "build_aab" ]; then
 #             curl -F chat_id=$CHAT_ID -F document=@"build/app/outputs/bundle/release/app-release.aab" -F caption="MediaVerse AAB" https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
 #           fi
-
-
-
 name: Build APK/AAB MediaVerse
 
 on:
@@ -155,15 +152,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Send "Starting" message to Telegram
-      - name: Send starting message to Telegram
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          CHAT_ID: ${{ github.event.client_payload.chat_id }}
+      # Notify Telegram about the start of the process
+      - name: Notify Telegram - Build Starting
         run: |
-          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ github.event.client_payload.chat_id }} -d text="🚀 Starting build process for MediaVerse..."
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Build process started for MediaVerse."
 
       # Cache Flutter SDK
+      - name: Notify Telegram - Caching Flutter SDK
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Caching Flutter SDK in progress."
+
       - name: Cache Flutter SDK
         uses: actions/cache@v3
         with:
@@ -171,25 +173,27 @@ jobs:
           key: flutter-sdk-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
           restore-keys: |
             flutter-sdk-${{ runner.os }}-
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          CHAT_ID: ${{ github.event.client_payload.chat_id }}
-        run: |
-          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ CHAT_ID }} -d text="🔧 Caching Flutter SDK..."
 
       # Setup Flutter environment
+      - name: Notify Telegram - Setting up Flutter Environment
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Setting up Flutter environment."
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           flutter-version: 3.22.0
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          CHAT_ID: ${{ github.event.client_payload.chat_id }}
-        run: |
-          curl -s -X POST https://api.telegram.org/bot${{ TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ CHAT_ID }} -d text="🔧 Setting up Flutter environment..."
 
       # Cache Android SDK
+      - name: Notify Telegram - Caching Android SDK
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Caching Android SDK in progress."
+
       - name: Cache Android SDK
         uses: actions/cache@v3
         with:
@@ -197,13 +201,14 @@ jobs:
           key: android-sdk-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
           restore-keys: |
             android-sdk-${{ runner.os }}-
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          CHAT_ID: ${{ github.event.client_payload.chat_id }}
-        run: |
-          curl -s -X POST https://api.telegram.org/bot${{ TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ CHAT_ID }} -d text="🔧 Caching Android SDK..."
 
       # Setup Android SDK
+      - name: Notify Telegram - Setting up Android SDK
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Setting up Android SDK."
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
         with:
@@ -211,13 +216,14 @@ jobs:
           target: default
           arch: x86_64
           ndk: true
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          CHAT_ID: ${{ github.event.client_payload.chat_id }}
-        run: |
-          curl -s -X POST https://api.telegram.org/bot${{ TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ CHAT_ID }} -d text="🔧 Setting up Android SDK..."
 
       # Cache Gradle
+      - name: Notify Telegram - Caching Gradle
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Caching Gradle dependencies."
+
       - name: Cache Gradle
         uses: actions/cache@v3
         with:
@@ -225,57 +231,129 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('android/build.gradle') }}
           restore-keys: |
             gradle-${{ runner.os }}-
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          CHAT_ID: ${{ github.event.client_payload.chat_id }}
-        run: |
-          curl -s -X POST https://api.telegram.org/bot${{ TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ CHAT_ID }} -d text="🔧 Caching Gradle..."
 
-      # Get dependencies
+      # Cache Flutter build files
+      - name: Notify Telegram - Caching Flutter build files
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Caching Flutter build files."
+
+      - name: Cache Flutter build files
+        uses: actions/cache@v3
+        with:
+          path: build/
+          key: flutter-build-${{ runner.os }}-${{ hashFiles('pubspec.yaml') }}
+          restore-keys: |
+            flutter-build-${{ runner.os }}-
+
+      # Cache Flutter pub dependencies
+      - name: Notify Telegram - Caching Flutter pub dependencies
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Caching Flutter pub dependencies."
+
+      - name: Cache Flutter pub dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            pubspec.lock
+          key: pub-cache-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-cache-${{ runner.os }}-
+
+      # Install Android build-tools including zipalign
+      - name: Notify Telegram - Installing Android build-tools
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Installing Android build-tools."
+
+      - name: Install Android build-tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y android-sdk build-essential
+          sdkmanager "build-tools;30.0.3"
+
+      # Get dependencies (skip cleaning cache to reuse cached files)
+      - name: Notify Telegram - Getting dependencies
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Getting Flutter project dependencies."
+
       - name: Get dependencies
         run: flutter pub get
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          CHAT_ID: ${{ github.event.client_payload.chat_id }}
-        run: |
-          curl -s -X POST https://api.telegram.org/bot${{ TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ CHAT_ID }} -d text="📦 Fetching dependencies..."
 
-      # Build APK or AAB
+      # Build based on event type (APK or AAB)
+      - name: Notify Telegram - Starting APK/AAB Build
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Starting ${GITHUB_EVENT_NAME} build process."
+
       - name: Build APK or AAB
         run: |
           if [ "${{ github.event.action }}" == "build_apk" ]; then
             flutter build apk --release --split-per-abi
-            curl -s -X POST https://api.telegram.org/bot${{ TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ CHAT_ID }} -d text="🏗 Building APK..."
           elif [ "${{ github.event.action }}" == "build_aab" ]; then
             flutter build appbundle --release
-            curl -s -X POST https://api.telegram.org/bot${{ TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ CHAT_ID }} -d text="🏗 Building AAB..."
           fi
+
+      # Decode keystore
+      - name: Notify Telegram - Decoding keystore
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Decoding keystore."
+
+      - name: Decode keystore
+        env:
+          KEYSTORE_FILE_BASE64: ${{ secrets.KEYSTORE_FILE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_FILE_BASE64" | base64 --decode > android/app/keystore.jks
 
       # Sign APK or AAB
+      - name: Notify Telegram - Signing APK or AAB
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Signing APK or AAB."
+
       - name: Sign APK or AAB
         env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          CHAT_ID: ${{ github.event.client_payload.chat_id }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          if [ "${{ github.event.action }}" == "build_apk" ]; then
-            curl -s -X POST https://api.telegram.org/bot${{ TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ CHAT_ID }} -d text="🔑 Signing APK..."
-          elif [ "${{ github.event.action }}" == "build_aab" ]; then
-            curl -s -X POST https://api.telegram.org/bot${{ TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ CHAT_ID }} -d text="🔑 Signing AAB..."
-          fi
-
-      # Send APK or AAB to Telegram
-      - name: Send APK or AAB to Telegram
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-        run: |
-          CHAT_ID=${{ github.event.client_payload.chat_id }}  
-          
           if [ "${{ github.event.action }}" == "build_apk" ]; then
             for APK in build/app/outputs/apk/release/*.apk; do
-              curl -F chat_id=$CHAT_ID -F document=@"$APK" -F caption="MediaVerse APK" https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
+              jarsigner -verbose -keystore android/app/keystore.jks -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" "$APK" "$KEY_ALIAS"
             done
-            curl -s -X POST https://api.telegram.org/bot${{ TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ CHAT_ID }} -d text="✅ APK sent successfully."
           elif [ "${{ github.event.action }}" == "build_aab" ]; then
-            curl -F chat_id=$CHAT_ID -F document=@"build/app/outputs/bundle/release/app-release.aab" -F caption="MediaVerse AAB" https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendDocument
-            curl -s -X POST https://api.telegram.org/bot${{ TELEGRAM_TOKEN }}/sendMessage -d chat_id=${{ CHAT_ID }} -d text="✅ AAB sent successfully."
+            jarsigner -verbose -keystore android/app/keystore.jks -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" build/app/outputs/bundle/release/app-release.aab "$KEY_ALIAS"
           fi
+
+      # Align APK
+      - name: Notify Telegram - Zipaligning APK
+        if: github.event.action == 'build_apk'
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Aligning APK."
+
+      - name: Zipalign APK (if APK is built)
+        if: github.event.action == 'build_apk'
+        run: |
+          for APK in build/app/outputs/apk/release/*.apk; do
+            zipalign -v -p 4 "$APK" "${APK%.apk}-aligned.apk"
+          done
+
+      # Notify Telegram that the build is complete
+      - name: Notify Telegram - Build Complete
+        run: |
+          curl -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage \
+          -d chat_id=${{ github.event.client_payload.chat_id }} \
+          -d text="Build complete. APK/AAB has been generated successfully."

@@ -29,15 +29,30 @@ class GridPostView extends StatefulWidget {
 class _GridPostViewState extends State<GridPostView> {
   bool isSelected = false;
   void toggleSelection() {
+    double videoLength =
+    ( widget.model[
+    'file']['info']['time'] ??
+        0)
+        .toDouble();
+    print('=======================================================');
+    print('=======================================================');
+    print('=======================================================');
+    print(videoLength);
+    print(videoLength);
+    print(videoLength);
+    print('=======================================================');
+    print('=======================================================');
+    print('=======================================================');
     setState(() {
       isSelected = !isSelected;
     });
 
     if (isSelected) {
+
       Get.find<MediaSuitController>().addItemToTempList(
         widget.model['media']['name'].toString(),
         widget.model['file']['url'],
-        widget.model['length'],
+        videoLength,
         widget.model['file_id'].toString(),
         widget.model['media_type'],
       );
@@ -271,12 +286,26 @@ class _GridPostView2State extends State<GridPostView2> {
     setState(() {
       isSelected = !isSelected;
     });
-
+    double videoLength =
+    ( widget.model[
+    'file']['info']['time'] ??
+        0)
+        .toDouble();
+    print('=======================================================');
+    print('=======================================================');
+    print('=======================================================');
+    print(videoLength);
+    print(videoLength);
+    print(videoLength);
+    print('=======================================================');
+    print('=======================================================');
+    print('=======================================================');
     if (isSelected) {
+
       Get.find<MediaSuitController>().addItemToTempList(
         widget.model['media']['name'].toString(),
         widget.model['file']['url'],
-        widget.model['length'],
+        videoLength,
         widget.model['file_id'].toString(),
         widget.model['media_type'],
       );

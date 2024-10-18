@@ -209,7 +209,7 @@ class DetailVideoScreen extends StatelessWidget {
                                         onTap: () {
                                           double videoLength =
                                               (videoController.videoDetails?[
-                                                          'media']['length'] ??
+                                                          'file']['info']['time'] ??
                                                       0)
                                                   .toDouble();
 
@@ -226,6 +226,7 @@ class DetailVideoScreen extends StatelessWidget {
                                                       .videoDetails!['file_id']
                                                       .toString());
                                           Get.toNamed(PageRoutes.MEDIASUIT);
+
                                         },
                                         child: Icon(Icons.edit),
                                       ),

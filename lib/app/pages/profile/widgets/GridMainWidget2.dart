@@ -32,12 +32,26 @@ class _GridPostViewForDetailsState extends State<GridPostViewForDetails> {
     setState(() {
       isSelected = !isSelected;
     });
-
+    double videoLength =
+    ( widget.model[
+    'file']['info']['time'] ??
+        0)
+        .toDouble();
+    print('=======================================================');
+    print('=======================================================');
+    print('=======================================================');
+    print(videoLength);
+    print(videoLength);
+    print(videoLength);
+    print('=======================================================');
+    print('=======================================================');
+    print('=======================================================');
     if (isSelected) {
+
       Get.find<MediaSuitController>().addItemToTempList(
         widget.model['media']['name'].toString(),
         widget.model['file']['url'],
-        widget.model['length'],
+        videoLength,
         widget.model['file_id'].toString(),
         widget.model['media_type'],
       );
